@@ -1,0 +1,1 @@
+source_dataset,environment_type,case_id,hospitalid,age,gender,hr_mean,hr_std,respiration_mean,respiration_std,bp_sys_ap_mean,bp_sys_ap_std,bp_dia_ap_mean,bp_dia_ap_std,bp_mean_ap_mean,bp_mean_ap_std,glucose_mean,glucose_std,creatinine_mean,creatinine_std,wbc_mean,wbc_std,sodium_mean,sodium_std,bun_mean,bun_std,apachescore,predictedhospitalmortality,target_mortality

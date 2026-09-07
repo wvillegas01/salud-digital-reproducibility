@@ -1,0 +1,8 @@
+cff-version: 1.2.0
+title: "Salud Digital ICU Mortality Transfer Reproducibility Package"
+message: "If you use this reproducibility package, please cite the associated manuscript and the original MIMIC/eICU data resources."
+authors:
+  - family-names: "Robalino-Diaz"
+    given-names: "J."
+version: "0.1.0"
+date-released: "2026-09-07"

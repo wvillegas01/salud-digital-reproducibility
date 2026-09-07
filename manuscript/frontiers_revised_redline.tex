@@ -1,0 +1,717 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% This is just an example/guide for you to refer to when submitting manuscripts to Frontiers, it is not mandatory to use Frontiers .cls files nor frontiers.tex  %
+% This will only generate the Manuscript, the final article will be typeset by Frontiers after acceptance.   
+%                                              %
+%                                                                                                                                                         %
+% When submitting your files, remember to upload this *tex file, the pdf generated with it, the *bib file (if bibliography is not within the *tex) and all the figures.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%% Version 3.4 Generated 2022/06/14 %%%
+%%% You will need to have the following packages installed: datetime, fmtcount, etoolbox, fcprefix, which are normally inlcuded in WinEdt. %%%
+%%% In http://www.ctan.org/ you can find the packages and how to install them, if necessary. %%%
+%%%  NB logo1.jpg is required in the path in order to correctly compile front page header %%%
+
+\documentclass[utf8]{FrontiersinHarvard} % for articles in journals using the Harvard Referencing Style (Author-Date), for Frontiers Reference Styles by Journal: https://zendesk.frontiersin.org/hc/en-us/articles/360017860337-Frontiers-Reference-Styles-by-Journal
+%\documentclass[utf8]{FrontiersinVancouver} % for articles in journals using the Vancouver Reference Style (Numbered), for Frontiers Reference Styles by Journal: https://zendesk.frontiersin.org/hc/en-us/articles/360017860337-Frontiers-Reference-Styles-by-Journal
+%\documentclass[utf8]{frontiersinFPHY_FAMS} % Vancouver Reference Style (Numbered) for articles in the journals "Frontiers in Physics" and "Frontiers in Applied Mathematics and Statistics" 
+
+%\setcitestyle{square} % for articles in the journals "Frontiers in Physics" and "Frontiers in Applied Mathematics and Statistics" 
+\usepackage{url,hyperref,lineno,microtype,subcaption}
+\usepackage{xcolor}
+\usepackage[onehalfspacing]{setspace}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+
+\linenumbers
+
+
+% Leave a blank line between paragraphs instead of using \\
+
+
+\def\keyFont{\fontsize{8}{11}\helveticabold }
+\def\firstAuthorLast{\textcolor{red}{Robalino-Díaz {et~al.}}} %use et al only if is more than 1 author
+\def\Authors{Jorge Robalino-Díaz\,$^{1}$\textcolor{red}{,} Alejandro Cabrera-Andrade\,$^{2,3}$, Ana Karina Zambrano\,$^{4}$, and William Villegas-Ch\,$^{1*}$}
+% Affiliations should be keyed to the author's name with superscript numbers and be listed as follows: Laboratory, Institute, Department, Organization, City, State abbreviation (USA, Canada, Australia), and Country (without detailed address information such as city zip codes or street names).
+% If one of the authors has a change of address, list the new address below the correspondence details using a superscript symbol and use the same symbol to indicate the author in the author list.
+\def\Address{$^{1}$Escuela de Ingeniería en Ciberseguridad, Facultad de Ingeniería y Ciencias Aplicadas, Universidad de Las Américas 170129, Quito, Ecuador\\ 
+	$^{2}$Carrera de Enfermería, Facultad de Ciencias de la Salud, Universidad de las Américas, Quito 170125, Ecuador\\
+	
+	$^{3}$Grupo de Bio-Quimioinformática, Universidad de las Américas, Quito 170125, Ecuador 
+	
+	$^{4}$Universidad UTE, Facultad de Ciencias de la Salud Eugenio Espejo, Centro de Investigación Genética y Genómica, Quito 170129, Ecuador}
+% The Corresponding Author should be marked with an asterisk
+% Provide the exact contact address (this time including street name and city zip code) and email of the corresponding author
+\def\corrAuthor{William Villegas-Ch}
+
+\def\corrEmail{william.villegas@udla.edu.ec}
+
+
+
+
+\begin{document}
+\onecolumn
+\firstpage{1}
+
+\title[Running Title]{Multi-Environment Evaluation and Decision-Level Analysis of Clinical Prediction Models under Dataset Shift} 
+
+\author[\firstAuthorLast ]{\Authors} %This field will be automatically populated
+\address{} %This field will be automatically populated
+\correspondance{} %This field will be automatically populated
+
+\extraAuth{}% If there are more than 1 corresponding author, comment this line and uncomment the next one.
+%\extraAuth{corresponding Author2 \\ Laboratory X2, Institute X2, Department X2, Organization X2, Street X2, City X2 , State XX2 (only USA, Canada and Australia), Zip Code2, X2 Country X2, email2@uni2.edu}
+
+
+\maketitle
+
+
+\begin{abstract}
+
+%%% Leave the Abstract empty if your article does not require one, please see the Summary Table for full details.
+\section{}
+Machine learning-based clinical prediction models are typically evaluated under intra-domain conditions, if training and test data share the same distribution. However, in real-world settings, these models operate in heterogeneous contexts where differences in populations, clinical protocols, and acquisition processes introduce dataset shifts, leading to performance degradations that are not captured by aggregate metrics such as accuracy or AUC-ROC. This work addresses this limitation through a multi-environment evaluation approach that integrates the MIMIC and eICU datasets into a common feature space and evaluates models such as Logistic Regression, Random Forest, and Gradient Boosting under intra-domain and cross-transfer conditions. A decision-level analytical framework is introduced that links the predicted probability distribution to the application of a fixed threshold, allowing for interpretation of model behavior beyond global metrics. \textcolor{red}{The original full-episode analysis is complemented with bootstrap confidence intervals, Brier-score calibration summaries, random-seed sensitivity checks, class-weight sensitivity checks, a strict shared-feature sensitivity analysis, and a 24-hour landmark sensitivity analysis to evaluate whether the central finding is dependent on retrospective feature aggregation or imperfect variable equivalence.} The results show that, although Random Forest achieves an AUC-ROC of 0.993 and an accuracy of 0.984 in internal validation, its \textcolor{red}{fixed-threshold positive-class activation} collapses in transfer scenarios, resulting in an absence of true positives in Train eICU $\rightarrow$ Test MIMIC. At the same time, Logistic Regression maintains a sensitivity of 0.348. \textcolor{red}{When the analysis was restricted to variables observed in both domains, Random Forest still generated no true positives in this direction, whereas Gradient Boosting recovered limited sensitivity, indicating that part of its primary fixed-threshold failure was sensitive to the imperfect feature-alignment schema.} These results demonstrate that distributional misalignment induces systematic biases in the final decision \textcolor{red}{even when some rank-ordering discrimination remains present}.
+
+\tiny
+ \keyFont{ \section{Keywords:} Cross-domain clinical prediction, Dataset shift, Multi-environment Learning, Decision-level analysis, Probabilistic classification.} %All article types: you may provide up to 8 keywords; at least 5 are mandatory.
+\end{abstract}
+
+\section{Introduction}
+
+The use of machine learning models in clinical prediction has grown steadily due to the availability of electronic health records (EHRs) and the ability of these records to capture complex relationships among physiological and biochemical variables. However, much of this development has been evaluated under the assumption of distributional homogeneity, in which training and test data come from the same clinical setting. This condition, while convenient from an experimental perspective, does not reflect the operational reality of healthcare systems, where models must be generalized to different populations, institutions, and protocols. Recent literature indicates that this discrepancy leads to \textcolor{red}{marked} performance degradation when models are deployed outside their original domain, particularly in critical tasks such as mortality prediction~\cite{Abdillah2024,Denada2025}.
+
+The problem is exacerbated in multi-center settings, where heterogeneity between datasets such as MIMIC and eICU introduces differences in variable distribution, event prevalence, and data acquisition processes. These variations directly affect the structure of the models and their generalizability, a phenomenon known as dataset shift. Recent studies have addressed this phenomenon from the perspective of domain adaptation, proposing techniques to align representations across different data sources\citealp{Tayal2025}. However, these approaches often focus on improving overall metrics without explicitly analyzing how models make decisions under conditions of distributional misalignment. Additionally, research on feature selection has shown that the stability of selected variables can vary \textcolor{red}{substantially} across domains, affecting model consistency~\citet{Vlasic2025}.
+
+A critical limitation in the evaluation of clinical models arises here: the use of aggregate metrics, such as accuracy or AUC-ROC, does not allow identification of structural flaws in model behavior, especially in detecting rare events. Recent work has indicated that interpretability and understanding of the decision-making process are fundamental for the adoption of models in clinical settings~\citet{Oh2024}, highlighting the need for approaches that go beyond average performance and analyze the relationship between predicted probabilities and final decisions. Furthermore, studies on medical classification have shown that class imbalance and overlap between distributions can \textcolor{red}{materially} affect model sensitivity, even when overall metrics suggest good performance~\citet{Ye2025}.
+
+Based on these limitations, this work posits as its central problem the inability of traditional evaluation frameworks to capture the actual behavior of models under conditions of transfer between clinical domains. Specifically, the aim is to answer how the distribution of predicted probabilities changes when a model trained in one environment is evaluated in another, how this variation affects the application of a fixed decision threshold, and consequently, how the model's ability to detect the positive class is modified. This is integrated into the development of an analytical framework that enables interpretation of the model's behavior at the decision level, establishing an explicit connection between probabilistic estimation and the final class assignment.
+
+To address this problem, a multi-environment evaluation protocol is proposed that integrates heterogeneous clinical datasets and defines explicit cross-domain transfer scenarios. This protocol is complemented by an analytical framework focused on the probability distribution $f_{\theta}(x)$ and the application of a fixed decision threshold, allowing for the characterization of model behavior beyond aggregated metrics. The methodology includes constructing an integrated dataset from MIMIC and eICU, selecting comparable variables across domains, and evaluating representative models, such as Logistic Regression, Random Forest, and Gradient Boosting, under intra-domain and cross-domain conditions.
+
+The results show that although the models achieve high performance on internal validation, with accuracy exceeding 0.94 and AUC-ROC approaching 0.99 in some cases, their behavior changes \textcolor{red}{substantially} in transfer scenarios. It is observed that tree-based models can \textcolor{red}{lose all positive predictions at a transported fixed threshold} in the Train eICU $\rightarrow$ Test MIMIC scenario, resulting in classification configurations where all observations are assigned to the negative class. This phenomenon contrasts with the behavior of linear models, which maintain a limited but persistent detection capability. These findings demonstrate that performance degradation is not only manifested in global metrics but also in the structure of the decision-making process itself, highlighting the importance of analyzing the relationship between the probability distribution and the classification threshold. This work contributes to the state of the art by \textcolor{red}{empirically characterizing fixed-threshold decision failure under clinical dataset shift, rather than proposing probability-threshold analysis as a new mathematical construct,} and provides a methodological basis for developing more robust and reliable systems in real-world settings.
+
+\section{Literature Review}
+
+The development of clinical prediction models based on machine learning has evolved \textcolor{red}{rapidly} in recent years, driven by the availability of heterogeneous data from EHRs and distributed clinical systems. In this context, algorithms such as Logistic Regression, Random Forest, and boosting methods have demonstrated consistent performance in disease prediction tasks. However, their effectiveness depends largely on data quality, variable selection, and the specific conditions of the clinical environment~\citet{Abdillah2024}. Recent studies have shown that deep learning models can achieve higher levels of accuracy with complex data. Still, their performance remains conditioned by data distribution and the availability of representative information~\citet{Denada2025}.
+
+One of the main challenges identified in the literature is the generalization of models in heterogeneous clinical settings, where the assumption of independence and identical distribution (i.i.d.) does not hold. This phenomenon, known as domain shift, has been widely documented in medical applications, where variations in equipment, clinical protocols, and population characteristics generate \textcolor{red}{material} differences between datasets~\citet{Matta2024}. In this regard, the analysis of distributional shifts has become a central focus of current research, highlighting the need to develop models that maintain their performance outside the training domain.
+
+Empirical evidence demonstrates that clinical models experience \textcolor{red}{substantial} degradation when evaluated in populations not seen during training.~\citet{Musa2026} report that the performance of deep learning models can decrease by 10~\%--25~\% when applied across different populations, demonstrating the direct impact of domain shift on generalizability. This behavior is attributed to differences in disease prevalence, demographic characteristics, and data collection processes. Furthermore, mitigation strategies, such as domain adaptation and transfer learning, have been observed to offer limited improvements, with performance increases ranging from 5~\% to 15~\%, indicating that the problem is not fully resolved by conventional techniques.
+
+In the realm of structured clinical data, integrating multiple information sources introduces an additional layer of complexity.~\citep{Chen2025} highlight that the coexistence of structured and unstructured data, along with heterogeneity across institutions, limits models' ability to learn cross-domain invariant representations. Additionally, data-driven studies, such as MIMIC, have demonstrated that the appropriate selection of variables is critical for maintaining model performance, especially when dimensionality is reduced without \textcolor{red}{substantially} affecting predictive capacity~\citet{Wang2025}.
+
+The role of feature selection becomes more relevant in multi-domain scenarios, where the stability of the selected variables directly influences the model's robustness.~\citet{Theng2023} point out that the sensitivity of selection algorithms to data variations can affect the model's consistency across different environments. Along these lines, more recent approaches have incorporated advanced techniques, such as hybrid models and methods based on clinical knowledge, which improve interpretability and reduce data redundancy~\citet{Dardour2025,Sowan2025}.
+
+Another relevant aspect in the literature is external and multicenter validation, which remains limited in many clinical studies.~\citet{Mercier2026} demonstrate that most models are validated using cross-validation schemes, whereas prospective or multicenter validation is less frequent, thereby limiting the models' real-world applicability. This problem is exacerbated by the lack of standardization in assessment metrics and the definition of clinical outcomes, which hinders comparisons between studies.
+
+Finally, recent literature has begun to explore the relationship between prediction and explainability, highlighting the importance of understanding models' internal behavior in clinical settings.~\citet{Oh2024} points out that although predictive models are effective at identifying patterns, integrating them with interpretable approaches is essential for adoption in medical practice. This need becomes critical in scenarios where decisions depend not only on overall performance but also on the model's ability to respond consistently to data variations.
+
+
+\section{Materials and Methods}
+\subsection{Multi-source data acquisition and domain definition}
+
+The study is built upon \textcolor{red}{two primary clinical data sources used for mortality prediction: MIMIC-III Clinical Database Demo v1.4, derived from the MIMIC-III critical care resource}~\citet{Johnson2016MIMIC}, \textcolor{red}{and the eICU Collaborative Research Database}~\citet{Pollard2018eICU}. \textcolor{red}{A third source, MedDialog, is retained only as a descriptive exploratory extension and is not treated as a comparable mortality-prediction environment because it has no hospital-mortality target or aligned physiological feature space.} The multi-environment configuration is defined from these sources using a source\_dataset variable and an environment type, thereby allowing distinction between intra-domain and cross-transfer scenarios during evaluation.
+
+MIMIC serves as a reference for a single-center ICU environment, where clinical measurements (vital signs and laboratory tests) follow relatively consistent practices. eICU, on the other hand, integrates data from multiple hospitals and incorporates variability in protocols, instrumentation, and patient profiles. This difference is reflected in the construction of the integrated dataset, where both sources are combined while maintaining the source label, to enable two evaluation configurations: internal validation (training and testing within eICU) and cross-transfer (train eICU $\rightarrow$ test MIMIC and train MIMIC $\rightarrow$ test eICU). \textcolor{red}{The unit of analysis was the ICU episode: \texttt{icustay\_id} in MIMIC and \texttt{patientunitstayid} in eICU. The binary outcome was in-hospital mortality, operationalized as \texttt{hospital\_expire\_flag} in MIMIC and \texttt{actualhospitalmortality} in eICU after conversion to a binary label. Records without a resolvable mortality outcome were excluded from supervised modeling.}
+
+The prediction target is defined as hospital mortality (\texttt{target\_mortality}), derived from the variables available in each clinical source. Integration is performed at the episode/admission level (\texttt{case\_id}), preserving the correspondence between records and the output label. This definition allows for direct comparison of model behavior under domain changes while maintaining task consistency.
+
+MedDialog is incorporated \textcolor{red}{only as an exploratory unstructured-data extension}. Unlike MIMIC and eICU, it does not have an equivalent target variable for mortality or physiological measurements. Instead, each dialogue is transformed into a set of derived structural variables (e.g., \texttt{total\_turns}, \texttt{avg\_turn\_length}, \texttt{std\_turn\_length}, \texttt{total\_words}, \texttt{patient\_ratio}, \texttt{doctor\_ratio}, \texttt{description\_length}). \textcolor{red}{These descriptors are reported to document the feasibility of a tabular descriptive representation for conversational data, but they are not used in the mortality-prediction models and are not presented as evidence of clinical-domain transfer.}
+
+The operational definition of the multi-domain environment is therefore determined by \textcolor{red}{the two clinical domains with different institutional origins (MIMIC vs.\ eICU), which are used for intra-domain evaluation and cross-transfer. MedDialog is separated analytically from this primary experiment.}
+
+\textcolor{red}{Cohort construction followed a deterministic episode-level procedure. MIMIC episodes were extracted from the demo critical-care tables by linking ICU stays to admissions and retaining episodes with an available \texttt{hospital\_expire\_flag}. eICU episodes were extracted using \texttt{patientunitstayid} as the episode identifier and retaining records with a non-missing \texttt{actualhospitalmortality}. The final supervised cohort contained 136 MIMIC episodes and 3,676 eICU episodes. Because the MIMIC demo resource is intentionally small, this cohort should not be interpreted as representative of the full MIMIC population or of a general ICU population; it is used here as a constrained external-domain stress test. No patient-level clustering, repeated-admission exclusion beyond the available episode identifier, or hospital-level leave-site-out split was performed. These design choices are acknowledged as limitations when interpreting transfer performance.}
+
+\subsection{Data preprocessing and feature construction}
+
+Preprocessing is performed independently for each data source, maintaining traceability of each observation through a unique episode identifier (\texttt{case\_id}) and its source (\texttt{source\_dataset}). In structured clinical datasets (MIMIC and eICU), the variables correspond to time series of physiological and laboratory measurements recorded at different times throughout the patient's stay~\citet{Wan2025}. \textcolor{red}{In the original analysis, these measurements were summarized over the available episode rather than a prespecified early prediction window. This design should therefore be interpreted as retrospective admission-level classification of hospital mortality, not as a deployable prospective early-warning model. To address the reviewers' concern about temporal leakage, we added a landmark sensitivity analysis using only measurements available during the first 24 hours after ICU admission and excluding patients whose identifiable death or discharge occurred before completion of that observation window.} Since the time length $T_i$ of each episode $i$ is variable, an aggregation process is applied that transforms these series into fixed-dimensional representations.
+
+Let $x_{i,t}^{(j)}$ be the observed value of the clinical variable $j$ for case $i$ at time $t$, with $t \in \{1, \dots, T_i\}$. For each variable, statistical descriptors are constructed that capture both central tendency and intra-episode variability, including the mean (Equation~\ref{eq:mean_descriptor}), standard deviation (Equation~\ref{eq:std_descriptor}), and minimum/maximum values (Equation~\ref{eq:minmax_descriptor}):
+
+\begin{equation}
+	\mu_i^{(j)} = \frac{1}{T_i} \sum_{t=1}^{T_i} x_{i,t}^{(j)}
+	\label{eq:mean_descriptor}
+\end{equation}
+
+\begin{equation}
+	\sigma_i^{(j)} = \sqrt{\frac{1}{T_i} \sum_{t=1}^{T_i} \left(x_{i,t}^{(j)} - \mu_i^{(j)} \right)^2}
+	\label{eq:std_descriptor}
+\end{equation}
+
+\begin{equation}
+	x_{i,\min}^{(j)} = \min_{t} x_{i,t}^{(j)}, \quad
+	x_{i,\max}^{(j)} = \max_{t} x_{i,t}^{(j)}
+	\label{eq:minmax_descriptor}
+\end{equation}
+
+This set of transformations allows for condensation of the temporal information into a feature vector that preserves the basic dynamics of each variable, regardless of the series length, which is necessary for training supervised models in a homogeneous vector space.
+
+The handling of missing values is addressed using a selection criterion based on the proportion of missing values for each variable. Let $m_j$ be the missing value rate of variable $j$ out of the total set of $N$ observations, as defined in Equation~\ref{eq:missing_rate}:
+
+\begin{equation}
+	m_j = \frac{1}{N} \sum_{i=1}^{N} \mathbb{I}\left(x_i^{(j)} = \text{NaN}\right)
+	\label{eq:missing_rate}
+\end{equation}
+
+where $\mathbb{I}(\cdot)$ is the indicator function. A variable retention threshold is established such that $m_j \leq 0.60$, which ensures that each feature included in the model has sufficient statistical support. This filtering prevents the introduction of noise from variables with low completeness and stabilizes training on heterogeneous data.
+
+Once the variables are selected, the features are organized in a common space that includes both physiological descriptors and derived variables, maintaining consistency between MIMIC and eICU. This alignment allows the construction of an integrated dataset in which each observation shares the same structure, regardless of its origin. \textcolor{red}{The retained predictors were age, gender, heart-rate mean and standard deviation, respiratory-rate mean and standard deviation, glucose mean and standard deviation, creatinine mean and standard deviation, white-blood-cell mean and standard deviation, sodium mean and standard deviation, blood-urea-nitrogen mean and standard deviation, arterial or noninvasive systolic/diastolic/mean blood-pressure summaries when available, eICU hospital identifier, APACHE score, and predicted hospital mortality. Variables such as \texttt{hospitalid}, \texttt{apachescore}, and \texttt{predictedhospitalmortality} were available only in eICU, whereas arterial-pressure summaries were not available in the MIMIC demo extraction used here. These variables were retained in the common tabular schema to preserve source traceability but were not assumed to be clinically equivalent across domains. Therefore, feature alignment should be interpreted as structural alignment for modeling rather than proof of complete semantic or measurement equivalence.}
+
+In the case of MedDialog, preprocessing follows a different logic due to the data's unstructured nature. Each instance is defined as a dialogue $D_i = \{u_1, u_2, \dots, u_{K_i}\}$, where $K_i$ is the number of turns and each $u_k$ corresponds to a textual intervention. From this sequence, quantitative descriptors are constructed that represent the conversational structure, including the total number of turns (Equation~\ref{eq:total_turns}), the average turn length (Equation~\ref{eq:avg_turn_length}), and the total number of words (Equation~\ref{eq:total_words}):
+
+\begin{equation}
+	\text{total\_turns}_i = K_i
+	\label{eq:total_turns}
+\end{equation}
+
+\begin{equation}
+	\text{avg\_turn\_length}_i =
+	\frac{1}{K_i} \sum_{k=1}^{K_i} |u_k|
+	\label{eq:avg_turn_length}
+\end{equation}
+
+\begin{equation}
+	\text{total\_words}_i =
+	\sum_{k=1}^{K_i} |u_k|
+	\label{eq:total_words}
+\end{equation}
+
+where $|u_k|$ denotes the number of words in turn $k$. Additionally, the participation proportion for each role is calculated as the fraction of turns associated with the patient and the medical professional relative to the total number of interventions. These variables allow capture of structural properties of the dialogue, such as length, interaction balance, and variability of interventions.
+
+The transformation applied to MedDialog produces a tabular descriptive representation. \textcolor{red}{However, because these variables are not semantically equivalent to the physiological and laboratory predictors in MIMIC and eICU and because MedDialog lacks a comparable mortality target, this component is not used to support the mortality-transfer conclusions.}
+
+\subsection{Integrated dataset construction and labeling strategy}
+The integrated dataset is constructed by combining clinical datasets from MIMIC and eICU, ensuring consistency across the feature space defined during preprocessing. Let $\mathcal{D}^{(M)}$ be the set of observations from MIMIC and $\mathcal{D}^{(E)}$ the corresponding set from eICU. The integrated dataset is defined as the union shown in Equation~\ref{eq:integrated_dataset}:
+
+\begin{equation}
+	\mathcal{D}^{(I)} = \mathcal{D}^{(M)} \cup \mathcal{D}^{(E)}
+	\label{eq:integrated_dataset}
+\end{equation}
+
+where each observation $x_i \in \mathcal{D}^{(I)}$ belongs to a common feature space $\mathbb{R}^d$, previously aligned between both sources by selecting shared variables.
+
+To preserve the traceability of the data's origin, a categorical origin variable $s_i$ is defined, which identifies the domain to which each observation belongs, as presented in Equation~\ref{eq:source_indicator}:
+
+\begin{equation}
+	s_i =
+	\begin{cases}
+		0, & \text{if } x_i \in \mathcal{D}^{(M)} \\
+		1, & \text{if } x_i \in \mathcal{D}^{(E)}
+	\end{cases}
+	\label{eq:source_indicator}
+\end{equation}
+
+This variable allows for explicit distinction between data generation environments and forms the basis for defining intra-domain and cross-transfer evaluation scenarios.
+
+The prediction target is defined as hospital mortality, represented by a binary variable $y_i \in \{0,1\}$, constructed from the indicators available in each source, as defined in Equation~\ref{eq:mortality_target}:
+
+\begin{equation}
+	y_i =
+	\begin{cases}
+		1, & \text{if the patient has mortality} \\
+		0, & \text{otherwise}
+	\end{cases}
+	\label{eq:mortality_target}
+\end{equation}
+
+The integration of the datasets is performed under the condition of consistency in the definition of the target, so that all observations share the same output semantics, regardless of their origin.
+
+Additionally, an environment characterization variable $e_i$ is introduced, which captures the differences in the data generation process, as presented in Equation~\ref{eq:environment_characterization}:
+
+\begin{equation}
+	e_i =
+	\begin{cases}
+		\text{single-center}, & \text{if } s_i = 0 \\
+		\text{multi-center}, & \text{if } s_i = 1
+	\end{cases}
+	\label{eq:environment_characterization}
+\end{equation}
+
+This distinction enables the incorporation of relevant contextual information for analyzing model behavior, particularly in scenarios where cross-domain variability directly affects generalizability.
+
+The process of building the integrated dataset follows a deterministic sequence that ensures feature alignment, label assignment, and the preservation of each observation's provenance. This procedure is formalized in Algorithm~\ref{alg:integrated_dataset_construction}.
+
+\begin{algorithm}
+	\caption{Integrated dataset construction for multi-environment learning}
+	\label{alg:integrated_dataset_construction}
+	
+	\textbf{Input:}
+	\begin{itemize}
+		\item $D_M$: dataset from MIMIC
+		\item $D_E$: dataset from eICU
+	\end{itemize}
+	
+	\textbf{Output:}
+	\begin{itemize}
+		\item $D_I$: integrated dataset
+	\end{itemize}
+	
+	\begin{algorithmic}[1]
+		
+		\STATE Align feature space between $D_M$ and $D_E$
+		\STATE Initialize $D_I \leftarrow \emptyset$
+		
+		\FOR{each sample $x$ in $D_M$}
+		\STATE assign \texttt{source\_dataset} $\leftarrow$ MIMIC
+		\STATE assign \texttt{environment\_type} $\leftarrow$ single-center
+		\STATE append $x$ to $D_I$
+		\ENDFOR
+		
+		\FOR{each sample $x$ in $D_E$}
+		\STATE assign \texttt{source\_dataset} $\leftarrow$ eICU
+		\STATE assign \texttt{environment\_type} $\leftarrow$ multi-center
+		\STATE append $x$ to $D_I$
+		\ENDFOR
+		
+		\STATE ensure target variable $y$ is defined for all samples
+		\STATE return $D_I$
+		
+	\end{algorithmic}
+\end{algorithm}
+
+This formulation allows for the explicit definition of a multi-domain environment in which observations share a common representation space but differ in their origin and the conditions under which they were generated.
+
+\subsection{Multi-environment modeling and evaluation protocol}
+
+The modeling process is defined on the integrated dataset
+$\mathcal{D}^{(I)} = \{(x_i, y_i, s_i)\}_{i=1}^{N}$,
+where each observation $x_i \in \mathbb{R}^d$ represents an aligned feature vector, $y_i \in \{0,1\}$ corresponds to the target mortality variable, and $s_i$ identifies the domain of origin. Three supervised models with different representational capabilities are used: Logistic Regression as a linear model, Random Forest as a decision-tree ensemble, and Gradient Boosting as a sequential additive model oriented toward error minimization.
+
+Model estimation is based on the probabilistic prediction of the target variable, where each model defines a function $f_{\theta}(x_i) \in [0,1]$ that represents the estimated probability of mortality. The classification decision is obtained by applying a fixed threshold $\tau$, defined in Equation~\ref{eq:binary_decision}:
+
+\begin{equation}
+	\hat{y}_i = \mathbb{I}\big(f_{\theta}(x_i) \geq \tau\big)
+	\label{eq:binary_decision}
+\end{equation}
+
+where $\tau = 0.5$ and $\mathbb{I}(\cdot)$ is the indicator function. \textcolor{red}{The value $\tau=0.5$ is used as a fixed reference threshold to assess transportability of an unchanged decision rule; it is not presented as an optimized clinical threshold.} This formulation decouples the probabilistic estimation process from the binary decision, facilitating analysis of the model's behavior across different distributions.
+
+The experimental protocol is organized into four scenarios that differ in the relationship between the training and test sets. In the internal validation scenario, the model is trained and evaluated solely on eICU data, allowing its behavior to be analyzed under consistent data-distribution conditions. In the integrated cross-validation scenario, the entire dataset $\mathcal{D}^{(I)}$ is used under a stratified five-fold cross-validation scheme, preserving the class proportions in each subset. In the transfer scenarios, the model is trained in one domain and evaluated in another, explicitly defining distributional misalignment conditions.
+
+Evaluation in transfer scenarios is formalized as a cross-domain generalization problem, in which the training and test distributions differ. Let $P_E(x, y)$ be the distribution associated with eICU and $P_M(x, y)$ the one corresponding to MIMIC. The evaluation condition is established in Equation~\ref{eq:distribution_shift}:
+
+\begin{equation}
+	P_{\text{train}}(x, y) \neq P_{\text{test}}(x, y)
+	\label{eq:distribution_shift}
+\end{equation}
+
+This inequality introduces a domain change that directly affects the model's generalization capacity, enabling analysis of its behavior under structural and distributional variations. \textcolor{red}{For the eICU internal-validation scenario, a stratified 75\%/25\% train-test split was used with \texttt{random\_state=42}. Integrated cross-validation used five stratified folds across the combined MIMIC-eICU clinical dataset. This integrated cross-validation estimates performance when both domains are represented during resampling; it is not interpreted as external validation because observations from both sources contribute to the cross-validation process.}
+
+The complete training and evaluation procedure is explicitly described in Algorithm~\ref{alg:modeling_evaluation_protocol}, which defines the sequence for scenario selection, model training, prediction generation, and metric calculation. \textcolor{red}{All preprocessing operations were implemented inside a scikit-learn pipeline fitted only on the training split or training fold. Numeric variables were imputed using the training-set median and standardized using the training-set mean and standard deviation. Categorical variables were imputed using the most frequent training-set category and one-hot encoded with unseen categories ignored at test time. Features with no observed value in a training domain were not imputable from that domain and were therefore ignored by the fitted preprocessing step for that scenario; this behavior reflects the imperfect measurement equivalence between MIMIC and eICU and is considered in the interpretation of cross-domain transfer. Logistic Regression used \texttt{max\_iter=2000}, \texttt{solver=liblinear}, and \texttt{class\_weight=balanced}; Random Forest used 300 trees, \texttt{random\_state=42}, and \texttt{class\_weight=balanced}; Gradient Boosting used the scikit-learn default gradient boosting classifier with \texttt{random\_state=42} and no class weighting in the primary analysis. No hyperparameter search was performed. The analysis was run with Python 3.8.10, scikit-learn 1.3.2, pandas 2.0.3, and NumPy 1.24.3.} This algorithm \textcolor{red}{summarizes} the experimental process and establishes a direct correspondence between each evaluated configuration and its results.
+
+\begin{algorithm}
+	\caption{Multi-environment modeling and evaluation protocol}
+	\label{alg:modeling_evaluation_protocol}
+	
+	\textbf{Input:}
+	\begin{itemize}
+		\item $D_I$: integrated dataset
+		\item Models: \{Logistic, RF, GB\}
+	\end{itemize}
+	
+	\textbf{Output:}
+	\begin{itemize}
+		\item Performance metrics per scenario
+	\end{itemize}
+	
+	\begin{algorithmic}[1]
+		
+		\STATE Define scenarios:
+		\STATE \hspace{0.5cm} $S_1$: \texttt{eICU\_internal\_validation}
+		\STATE \hspace{0.5cm} $S_2$: \texttt{integrated\_5fold\_cv}
+		\STATE \hspace{0.5cm} $S_3$: \texttt{train\_eICU\_test\_MIMIC}
+		\STATE \hspace{0.5cm} $S_4$: \texttt{train\_MIMIC\_test\_eICU}
+		
+		\FOR{each model in Models}
+		\FOR{each scenario in $\{S_1, S_2, S_3, S_4\}$}
+		\STATE Split data according to scenario definition
+		\STATE Train model on training set
+		\STATE Predict probabilities on test set
+		\STATE Apply decision threshold $\tau = 0.5$
+		\STATE Compute TP, TN, FP, FN
+		\STATE Calculate metrics (Accuracy, Precision, Recall, F1, AUC)
+		\ENDFOR
+		\ENDFOR
+		
+		\STATE return results
+		
+	\end{algorithmic}
+\end{algorithm}
+
+Performance evaluation is based on the confusion matrix, considering the counts of true positives (TP), true negatives (TN), false positives (FP), and false negatives (FN). From these values, the evaluation metrics are defined through Precision (Equation~\ref{eq:precision_metric}), Recall (Equation~\ref{eq:recall_metric}), and F1-score (Equation~\ref{eq:f1_metric}):
+
+\begin{equation}
+	\text{Precision} =
+	\frac{TP}{TP + FP}
+	\label{eq:precision_metric}
+\end{equation}
+
+\begin{equation}
+	\text{Recall} =
+	\frac{TP}{TP + FN}
+	\label{eq:recall_metric}
+\end{equation}
+
+\begin{equation}
+	F1 =
+	2 \cdot
+	\frac{\text{Precision} \cdot \text{Recall}}
+	{\text{Precision} + \text{Recall}}
+	\label{eq:f1_metric}
+\end{equation}
+
+Additionally, the area under the ROC curve (AUC-ROC) is used as a measure of discriminative capacity independent of the decision threshold, allowing evaluation of class separability across different operating points.
+
+\textcolor{red}{Because the reviewers specifically raised concerns about calibration and threshold selection, we added additional transfer analyses beyond the primary fixed-threshold results. Calibration was summarized using the Brier score, five-bin calibration gaps, expected calibration error, and post hoc calibration intercept and slope from a logistic recalibration model of the observed outcome on the logit of the predicted probability. We also computed average precision as a precision-recall summary for imbalanced outcomes. Finally, we evaluated post hoc F1-maximizing thresholds on the test predictions only as a sensitivity analysis. These optimized thresholds are not proposed as deployable clinical cutoffs because they use test-set outcome information; they are included only to determine whether failure at $\tau=0.5$ reflects complete absence of ranking information or misalignment of the transported decision threshold.}
+
+\textcolor{red}{A strict shared-feature sensitivity analysis was also added to address the imperfect equivalence of the primary tabular schema. In this analysis, all predictors that were completely absent in either source were excluded, including eICU-specific identifiers and severity-score variables (\texttt{hospitalid}, \texttt{apachescore}, and \texttt{predictedhospitalmortality}) and pressure-summary variables unavailable in the MIMIC demo extraction. The resulting predictor set contained age, gender, and shared heart-rate, respiratory-rate, glucose, creatinine, white-blood-cell, sodium, and blood-urea-nitrogen summary variables. This analysis is used to evaluate whether the transfer findings persist when the models are restricted to variables with direct cross-domain availability.}
+
+\textcolor{red}{Class imbalance was handled explicitly for Logistic Regression and Random Forest through balanced class weights, whereas Gradient Boosting was evaluated unweighted in the primary analysis because this estimator does not use a \texttt{class\_weight} parameter. To assess whether this modeling choice explained the transfer failure, we added a sensitivity analysis comparing weighted and unweighted variants. In Train eICU $\rightarrow$ Test MIMIC, unweighted Random Forest still generated no positive predictions, and inverse-frequency sample weighting for Gradient Boosting recovered only two true positives (recall 0.043, F1-score 0.078). Thus, class weighting changed the operating point of some models but did not remove the cross-domain fixed-threshold failure.}
+
+The structure of the multi-environment evaluation protocol, including dataset integration, internal validation, and cross-transfer scenarios, is presented in Figure~\ref{fig:fig1}, which illustrates the relationships between domains, training and testing paths, and the configurations used in each experimental scenario.
+
+\begin{figure}[h!]
+	\begin{center}
+		\includegraphics[width=16cm]{Fig1.jpg}% This is a *.eps file
+	\end{center}
+	\caption{Multi-environment modeling and evaluation protocol for cross-domain clinical prediction.}\label{fig:fig1}
+\end{figure}
+
+\subsubsection{Analytical framework for behavior interpretation and cross-domain analysis}
+The analysis of the model's behavior is framed at the decision level, focusing on the transformation of predicted probabilities into binary outputs using a fixed threshold. Let $f_{\theta}(x_i) \in [0,1]$ be the estimated probability of the positive class for an observation $x_i$. The decision rule is defined by applying a fixed threshold $\tau = 0.5$ to the predicted probabilities, yielding a binary output $\hat{y}_i \in \{0,1\}$.
+
+This formulation decouples the probabilistic estimation process from the decision mechanism, establishing an analytical framework to study how the shape of the probability distribution influences the final class assignment.
+
+The proposed approach is based on analyzing the conditional distribution of $f_{\theta}(x)$ given the true class $y$, which allows evaluation of the separability between classes in the probability space. For each evaluation scenario, the predicted probabilities are grouped by the actual label $y$, enabling characterization of the degree of overlap, concentration, and displacement of the probability mass. This characterization defines the conditions under which the threshold-induced transformation can generate consistent decisions or introduce systematic biases.
+
+The application of the threshold $\tau$ induces a partitioning of the decision space whose stability depends directly on the structure of the probability distribution. In the presence of well-separated distributions, the threshold produces balanced assignments between the classes. In contrast, when the probabilities are concentrated in specific regions or exhibit \textcolor{red}{substantial} overlap, the resulting assignment may show dominance of one class, thereby affecting the model's ability to discriminate adequately between positive and negative events.
+
+The structural representation of this process is shown in Figure~\ref{fig:fig2}, which formalizes the sequence of transformations from the model input to the final decision. The scheme explicitly distinguishes between conditions of distributional alignment and misalignment between domains and establishes differentiated trajectories in the decision-making process. This formulation allows the model's behavior to be interpreted as a function of the relationship between the probabilistic estimate and the decision threshold, regardless of the specific evaluation scenario.
+
+\begin{figure}[h!]
+	\begin{center}
+		\includegraphics[width=15cm]{Fig2.jpg}% This is a *.eps file
+	\end{center}
+	\caption{Decision-level behavior analysis under cross-domain conditions.}\label{fig:fig2}
+\end{figure}
+
+The analytical framework is applied consistently across all scenarios defined in the experimental protocol, allowing us to study how variations in the probability distribution translate into changes in classification behavior at the decision level.
+
+\section{Results}
+\subsection{Characterization of the integrated dataset and selection of variables}
+The composition of the integrated dataset reveals a marked asymmetry between the sources. The original dataset is dominated by eICU, with 4,358 records, compared to 136 in MIMIC, representing a difference of more than one order of magnitude. This relationship persists after cleaning, with the clean dataset containing 3,812 valid instances, thereby preserving eICU's dominance as the primary source of information.
+
+Regarding the target variable, the class distribution shows notable differences between the datasets. In MIMIC, the 46 mortality events versus 90 non-mortality cases reflect a relatively balanced proportion (33.8~\% mortality). In contrast, in eICU, the ratio is \textcolor{red}{more unequal}, with 310 mortality events versus 3,366 non-mortality cases, corresponding to approximately 8.4~\% mortality. This divergence introduces a structural difference in the target distribution between the two environments, with MIMIC exhibiting a higher density of adverse events than eICU.
+
+Analysis of the clean integrated dataset shows that this discrepancy translates into a pronounced overall imbalance, with 3,456 non-mortality cases versus 356 mortality events, corresponding to a ratio of approximately 90.7~\% to 9.3~\%. This configuration implies that the minority class is \textcolor{red}{underrepresented}, which limits the models' ability to capture patterns associated with critical events.
+
+Additionally, it is observed that all 682 records without a target variable are concentrated in eICU, while MIMIC does not present any missing values in this dimension. Removing these records reduces the eICU volume to 3,676 valid instances, without substantially altering the class ratio in this source. \textcolor{red}{Because outcome-missingness is source-specific, we do not assume that these exclusions are fully non-informative; rather, we report their concentration in eICU and interpret the resulting cohort as the analyzable supervised subset.}
+
+Table~\ref{table:integrated_dataset_structure} presents the consolidated dataset structure, including the number of records per source before and after cleaning, the class distribution, and the number of retained variables (29). This representation allows simultaneous observation of the scale difference between the datasets, the concentration of missing values, and the final configuration of the dataset used in the analysis.
+
+\begin{table}[h]
+	\caption{Dataset composition and class distribution across MIMIC, eICU, and integrated clinical dataset}
+	\label{table:integrated_dataset_structure}
+	\setlength{\tabcolsep}{3pt}
+	\begin{tabular}{p{125pt}p{55pt}p{55pt}p{140pt}}
+		\hline
+		\textbf{Metric} & \textbf{MIMIC} & \textbf{eICU} & \textbf{Integrated clean dataset} \\ \hline
+		Raw samples & 136 & 4358 & 4494 \\
+		Valid samples & 136 & 3676 & 3812 \\
+		Non-mortality cases & 90 & 3366 & 3456 \\
+		Mortality cases & 46 & 310 & 356 \\
+		Missing target & 0 & 682 & 682 \\
+		Retained variables & 29 & 29 & 29 \\
+		Mortality proportion & 33.8~\% & 8.4~\% & 9.3~\% \\ \hline
+	\end{tabular}
+	\footnotesize
+\end{table}
+
+Regarding variable completeness, the missing values analysis indicates that central tendency metrics show relatively low levels of missingness. Variables such as \texttt{hr\_mean}, \texttt{glucose\_mean}, and \texttt{bun\_mean} show missing percentages of less than 3~\%, while derived variables such as \texttt{wbc\_std}, \texttt{bun\_std}, and \texttt{creatinine\_std} reach levels close to 10~\%--15~\%. This difference indicates that primary information associated with mean values is better represented than dispersion metrics, suggesting greater stability in capturing central tendency than in capturing intra-patient variability.
+
+The retained variable set maintains uniform dimensionality across the sources, with a total of 29 variables in the final dataset. In terms of completeness, variables associated with mean values show low levels of missing data, generally less than 3~\%. In contrast, variables derived from dispersion show higher rates of missing data, ranging from 10~\% to 15~\%. This difference is reflected in the distribution of missing values, where metrics such as \texttt{wbc\_std} show approximately 14.9~\% missing values, compared with \texttt{wbc\_mean}, which has a missing value rate close to 2.3~\%. Similarly, \texttt{creatinine\_std} and \texttt{sodium\_std} exceed 11~\% missing values, while their corresponding mean values remain below 3~\%. \textcolor{red}{Completeness was not identical across sources. In MIMIC, \texttt{hospitalid}, \texttt{apachescore}, \texttt{predictedhospitalmortality}, and arterial-pressure summaries were absent in the extracted demo cohort, while in eICU these variables were available. Conversely, core vital-sign and laboratory summaries were present in both sources with low-to-moderate missingness. This pattern indicates that the shared matrix has a common computational schema but not perfect measurement equivalence, which is central to the transfer interpretation.}
+
+\subsection{Comparison of distributions between clinical settings}
+The comparison of clinical variable distributions reveals consistent differences between the MIMIC and eICU datasets in both location and dispersion. For heart rate, both sources exhibit unimodal distributions with a high degree of overlap in the central range; however, a slight shift toward higher values is observed in MIMIC, with its maximum density concentrated around values slightly higher than those observed in eICU. Furthermore, the MIMIC distribution shows a longer right tail, indicating greater variability toward higher values than that of eICU.
+
+Figure~\ref{fig:fig3}(a) presents the comparative distributions of the selected clinical variables in both environments. In Figure~\ref{fig:fig3}(a), which shows heart rate, both distributions have a similar shape, with an approximately unimodal pattern. However, the MIMIC curve shows a slight shift toward higher values, with greater density in the 85--100 range. eICU, on the other hand, shows a higher concentration in the slightly lower ranges, with a steeper slope of decline following the peak. The overlap between the two curves is high in the mid-range but gradually decreases toward the extreme values, where MIMIC exhibits a longer tail.
+
+\begin{figure}[h!]
+	\begin{center}
+		\includegraphics[width=17cm]{Fig3.jpg}% This is a *.eps file
+	\end{center}
+\caption{Distribution of key clinical variables across datasets. (a) Heart rate distribution for MIMIC and eICU in beats per minute. (b) Glucose level distribution for MIMIC and eICU in mg/dL. (c) Creatinine distribution for MIMIC and eICU in mg/dL. (d) Mean arterial pressure distribution for MIMIC in mmHg. \textcolor{red}{Kernel-density curves were generated from available non-missing values using the plotting library's default Gaussian kernel bandwidth; the mean arterial pressure panel is limited to MIMIC because the corresponding arterial-pressure extraction was not available for eICU in the final harmonized matrix.}}\label{fig:fig3}
+\end{figure}
+
+In Figure~\ref{fig:fig3}(b), corresponding to glucose levels, the differences between the datasets are more pronounced. eICU shows a more concentrated distribution, with a sharper peak around 110, followed by a rapid drop in density. In contrast, MIMIC shows a broader distribution, with a lower concentration at the peak and a considerable extension toward higher values. The right tail in MIMIC extends \textcolor{red}{well} beyond 250, while in eICU, the density decreases more abruptly, indicating greater dispersion in MIMIC.
+
+In Figure~\ref{fig:fig3}(c), associated with creatinine, a structural difference in the shape of the distributions is observed. eICU shows a high density of values close to zero, with a pronounced peak and a rapid decline. In contrast, MIMIC exhibits a flatter distribution, with lower density at the minimum values and a greater extension toward the upper values. The MIMIC curve maintains a sustained presence over a broader range, reflecting greater variability compared to the strong concentration observed in eICU.
+
+Figure~\ref{fig:fig3}(d), corresponding to mean arterial pressure, shows only the distribution associated with MIMIC. The curve exhibits unimodal behavior, with moderate dispersion centered on intermediate values. The density increases progressively, reaching a maximum around 75--80, then gradually decreases toward higher values, with no evidence of pronounced extreme tails.
+
+\subsection{Intra-environment performance (baseline)}
+
+The performance of the models under intra-environment conditions is presented in Table~\ref{tab:intra_environment_performance}, considering both internal validation on eICU and cross-validation on the integrated dataset.
+
+\begin{table}[h]
+	\caption{Intra-domain performance of machine learning models under internal validation and integrated cross-validation scenarios}
+	\label{tab:intra_environment_performance}
+	\setlength{\tabcolsep}{3pt}
+	\begin{tabular}{p{115pt}p{95pt}p{50pt}p{50pt}p{45pt}p{45pt}p{60pt}}
+		\hline
+		\textbf{Scenario} & \textbf{Model} & \textbf{Accuracy} & \textbf{Precision} & \textbf{Recall} & \textbf{F1-score} & \textbf{AUC-ROC} \\ \hline
+		
+		eICU internal validation & LogisticRegression & 0.800 & 0.262 & 0.766 & 0.391 & 0.854 \\
+		eICU internal validation & RandomForest & 0.984 & 1.000 & 0.805 & 0.892 & 0.993 \\
+		eICU internal validation & GradientBoosting & 0.948 & 0.892 & 0.429 & 0.579 & 0.940 \\
+		
+		Integrated 5-fold CV & LogisticRegression & $0.791 \pm 0.012$ & $0.276 \pm 0.017$ & $0.761 \pm 0.042$ & $0.405 \pm 0.022$ & $0.861 \pm 0.020$ \\
+		
+		Integrated 5-fold CV & RandomForest & $0.977 \pm 0.005$ & $0.970 \pm 0.023$ & $0.778 \pm 0.064$ & $0.862 \pm 0.038$ & $0.991 \pm 0.005$ \\
+		
+		Integrated 5-fold CV & GradientBoosting & $0.943 \pm 0.002$ & $0.866 \pm 0.035$ & $0.466 \pm 0.056$ & $0.603 \pm 0.035$ & $0.943 \pm 0.009$ \\ \hline
+		
+	\end{tabular}
+	\footnotesize
+\end{table}
+
+In the internal validation scenario on eICU, all models performed well, with clear differences among the architectures. RandomForest achieved the best overall results, with an accuracy of 0.984, an F1-score of 0.892, and an AUC-ROC of 0.993, consistently outperforming the other models. Logistic Regression exhibited different behavior, with an accuracy of 0.800 and a high recall of 0.766, indicating a greater ability to identify the minority class compared to its precision (0.262). Gradient Boosting, on the other hand, showed an intermediate balance, with an accuracy of 0.948 and an AUC-ROC of 0.940, although it presented a considerably lower recall (0.429) than Logistic Regression.
+
+In the cross-validation scenario for the integrated dataset, the results showed a consistent trend across models and reduced variability in the metrics. RandomForest again demonstrates the best performance, with an accuracy of $0.977 \pm 0.005$, an F1-score of $0.862 \pm 0.038$, and an AUC-ROC of $0.991 \pm 0.005$, accompanied by low standard deviations, reflecting stability during training. Logistic Regression exhibits high recall ($0.761 \pm 0.042$) and low precision ($0.276 \pm 0.017$), with an F1-score of $0.405 \pm 0.022$. Gradient Boosting, in contrast, shows intermediate values with an accuracy of $0.943 \pm 0.002$, an F1-score of $0.603 \pm 0.035$, and an AUC-ROC of $0.943 \pm 0.009$.
+
+\textcolor{red}{The comparison between internal eICU validation and integrated cross-validation shows that tree-based models retain high apparent performance when the evaluation structure allows both domains to contribute to the resampling process. However, this pattern should not be interpreted as evidence of external transportability, because integrated cross-validation still differs from strict train-on-one-domain/test-on-another-domain transfer.} Furthermore, the standard deviations observed in cross-validation are low across all metrics, particularly for accuracy and AUC-ROC, indicating consistent model performance \textcolor{red}{under mixed-domain resampling}.
+
+\subsection{Multi-environment evaluation (transfer)}
+The performance of the models in cross-environment transfer scenarios is presented in Table~\ref{tab:cross_environment_transfer}, considering cases where training and evaluation are performed on different datasets. In the Train eICU $\rightarrow$ Test MIMIC scenario, a \textcolor{red}{marked} degradation in the performance of the tree-based models is observed. Both Random Forest and Gradient Boosting show precision, recall, and F1-score values of 0.000, indicating a complete lack of detection of the mortality class in the test set. Despite this, both models maintain AUC-ROC values of 0.700 and 0.692, respectively, indicating that the probabilistic ordering capacity is partially preserved. However, this does not translate into effective predictions for the minority class.
+
+\begin{table}[h]
+	\caption{Cross-domain model performance under transfer scenarios}
+	\label{tab:cross_environment_transfer}
+	\setlength{\tabcolsep}{3pt}
+	\begin{tabular}{p{140pt}p{50pt}p{50pt}p{50pt}p{45pt}p{45pt}p{60pt}}
+		\hline
+		\textbf{Scenario} & \textbf{Model} & \textbf{Accuracy} & \textbf{Precision} & \textbf{Recall} & \textbf{F1-score} & \textbf{AUC-ROC} \\ \hline
+		
+		Train eICU $\rightarrow$ Test MIMIC & Logistic & 0.618 & 0.421 & 0.348 & 0.381 & 0.583 \\
+		Train eICU $\rightarrow$ Test MIMIC & RF & 0.662 & 0.000 & 0.000 & 0.000 & 0.700 \\
+		Train eICU $\rightarrow$ Test MIMIC & GB & 0.662 & 0.000 & 0.000 & 0.000 & 0.692 \\
+		
+		Train MIMIC $\rightarrow$ Test eICU & Logistic & 0.754 & 0.140 & 0.374 & 0.204 & 0.694 \\
+		Train MIMIC $\rightarrow$ Test eICU & RF & 0.887 & 0.268 & 0.194 & 0.225 & 0.661 \\
+		Train MIMIC $\rightarrow$ Test eICU & GB & 0.808 & 0.133 & 0.232 & 0.169 & 0.615 \\ \hline
+		
+	\end{tabular}
+	\footnotesize
+\end{table}
+
+In this same scenario, Logistic Regression shows different performance, with an F1-score of 0.381, a precision of 0.421, and a recall of 0.348, indicating residual capacity to identify mortality events. However, these values are considerably lower than those obtained in the intra-environment validation, reflecting substantial performance loss when changing domains.
+
+In the reverse scenario, from Train MIMIC $\rightarrow$ Test eICU, the models show different behavior. Although a total collapse is not observed as in the previous case, performance remains low in all models. Logistic Regression achieves an F1-score of 0.204, while Random Forest and Gradient Boosting obtain values of 0.225 and 0.169, respectively. In terms of recall, the values range from 0.194 to 0.374, indicating limited ability to identify the mortality class.
+
+The comparison between these scenarios reveals a clear asymmetry in transfer. While training in eICU and evaluation in MIMIC lead to \textcolor{red}{complete loss of positive-class predictions at the fixed threshold for the tree-based models}, reverse transfer produces a more gradual, though still \textcolor{red}{substantial}, degradation. In both cases, the AUC-ROC values remain in the moderate range (0.583--0.700), in contrast to the observed F1-score values, highlighting a discrepancy between probabilistic discrimination capacity and effectiveness in classifying the minority class.
+
+\textcolor{red}{To quantify uncertainty in the transfer results, we added non-parametric bootstrap confidence intervals using 500 resamples within each test set. The intervals confirm that the small MIMIC test set produces substantial uncertainty around threshold-dependent metrics. In the Train eICU $\rightarrow$ Test MIMIC scenario, Logistic Regression obtained sensitivity 0.348 (95\% CI 0.218--0.500), specificity 0.756 (95\% CI 0.668--0.842), F1-score 0.381 (95\% CI 0.248--0.511), and AUC-ROC 0.583 (95\% CI 0.481--0.688). Random Forest and Gradient Boosting retained moderate AUC-ROC values of 0.700 (95\% CI 0.611--0.786) and 0.692 (95\% CI 0.603--0.788), respectively, but both had sensitivity and F1-score equal to 0.000 across the bootstrap resamples because no positive predictions were generated at the fixed 0.5 threshold. In the reverse Train MIMIC $\rightarrow$ Test eICU scenario, AUC-ROC ranged from 0.615 for Gradient Boosting to 0.694 for Logistic Regression, but F1-score remained low across all models: 0.204 (95\% CI 0.173--0.236) for Logistic Regression, 0.225 (95\% CI 0.181--0.272) for Random Forest, and 0.169 (95\% CI 0.139--0.203) for Gradient Boosting. Brier scores also indicated imperfect probability calibration under transfer, ranging from 0.259 to 0.292 in Train eICU $\rightarrow$ Test MIMIC and from 0.111 to 0.174 in Train MIMIC $\rightarrow$ Test eICU.}
+
+\textcolor{red}{Random-seed sensitivity was evaluated for Random Forest and Gradient Boosting using 10 seeds. In Train eICU $\rightarrow$ Test MIMIC, both tree-based models generated zero true positives and zero false positives for every seed, confirming that the fixed-threshold failure was not a single-seed artifact. AUC-ROC showed only modest seed variability in this direction (Random Forest mean 0.704, SD 0.017; Gradient Boosting mean 0.697, SD 0.005). In Train MIMIC $\rightarrow$ Test eICU, the threshold-dependent metrics varied slightly but remained low (Random Forest F1-score mean 0.226, SD 0.016; Gradient Boosting F1-score mean 0.165, SD 0.004).}
+
+\begin{table}[h]
+	\caption{\textcolor{red}{Bootstrap uncertainty and calibration summary for cross-domain transfer results. E2M denotes Train eICU $\rightarrow$ Test MIMIC; M2E denotes Train MIMIC $\rightarrow$ Test eICU. Values in brackets are 95\% bootstrap confidence intervals.}}
+	\label{tab:transfer_uncertainty}
+	\setlength{\tabcolsep}{3pt}
+	\tiny
+	\resizebox{\textwidth}{!}{%
+	\begin{tabular}{llllllll}
+		\hline
+		\textbf{\textcolor{red}{Scen.}} & \textbf{\textcolor{red}{Model}} & \textbf{\textcolor{red}{Precision}} & \textbf{\textcolor{red}{Sensitivity}} & \textbf{\textcolor{red}{Specificity}} & \textbf{\textcolor{red}{F1-score}} & \textbf{\textcolor{red}{AUC-ROC}} & \textbf{\textcolor{red}{Brier}} \\ \hline
+		\textcolor{red}{E2M} & \textcolor{red}{LR} & \textcolor{red}{0.421 [0.270, 0.572]} & \textcolor{red}{0.348 [0.218, 0.500]} & \textcolor{red}{0.756 [0.668, 0.842]} & \textcolor{red}{0.381 [0.248, 0.511]} & \textcolor{red}{0.583 [0.481, 0.688]} & \textcolor{red}{0.259 [0.209, 0.310]} \\
+		\textcolor{red}{E2M} & \textcolor{red}{RF} & \textcolor{red}{0.000 [0.000, 0.000]} & \textcolor{red}{0.000 [0.000, 0.000]} & \textcolor{red}{1.000 [1.000, 1.000]} & \textcolor{red}{0.000 [0.000, 0.000]} & \textcolor{red}{0.700 [0.611, 0.786]} & \textcolor{red}{0.278 [0.206, 0.336]} \\
+		\textcolor{red}{E2M} & \textcolor{red}{GB} & \textcolor{red}{0.000 [0.000, 0.000]} & \textcolor{red}{0.000 [0.000, 0.000]} & \textcolor{red}{1.000 [1.000, 1.000]} & \textcolor{red}{0.000 [0.000, 0.000]} & \textcolor{red}{0.692 [0.603, 0.788]} & \textcolor{red}{0.292 [0.215, 0.355]} \\
+		\textcolor{red}{M2E} & \textcolor{red}{LR} & \textcolor{red}{0.140 [0.118, 0.164]} & \textcolor{red}{0.374 [0.324, 0.426]} & \textcolor{red}{0.788 [0.775, 0.802]} & \textcolor{red}{0.204 [0.173, 0.236]} & \textcolor{red}{0.694 [0.666, 0.722]} & \textcolor{red}{0.174 [0.167, 0.181]} \\
+		\textcolor{red}{M2E} & \textcolor{red}{RF} & \textcolor{red}{0.268 [0.215, 0.325]} & \textcolor{red}{0.194 [0.151, 0.240]} & \textcolor{red}{0.951 [0.944, 0.958]} & \textcolor{red}{0.225 [0.181, 0.272]} & \textcolor{red}{0.661 [0.631, 0.689]} & \textcolor{red}{0.111 [0.106, 0.116]} \\
+		\textcolor{red}{M2E} & \textcolor{red}{GB} & \textcolor{red}{0.133 [0.107, 0.162]} & \textcolor{red}{0.232 [0.189, 0.280]} & \textcolor{red}{0.861 [0.848, 0.873]} & \textcolor{red}{0.169 [0.139, 0.203]} & \textcolor{red}{0.615 [0.587, 0.644]} & \textcolor{red}{0.145 [0.135, 0.154]} \\ \hline
+	\end{tabular}%
+	}
+\end{table}
+
+\textcolor{red}{The additional calibration and threshold-sensitivity analysis supports this interpretation. In Train eICU $\rightarrow$ Test MIMIC, average precision was 0.541 for Random Forest and 0.559 for Gradient Boosting, confirming that some ranking information remained despite zero positive predictions at $\tau=0.5$. Calibration gaps were nevertheless large: five-bin expected calibration error was 0.258 for Random Forest, 0.285 for Gradient Boosting, and 0.183 for Logistic Regression. Post hoc F1-maximizing thresholds were much lower than 0.5 for the tree-based models (0.067 for Random Forest and 0.027 for Gradient Boosting), recovering recall values of 0.783 and 0.826, respectively, but with only moderate precision (0.480 and 0.469) and specificity near 0.56 and 0.52. These results indicate that the transferred models were not devoid of all ordering information; rather, their probability scale was poorly aligned with the transported fixed threshold. In the reverse Train MIMIC $\rightarrow$ Test eICU scenario, F1-maximizing thresholds also differed from 0.5, but gains remained limited and often required substantial specificity loss.}
+
+\textcolor{red}{We also performed a 24-hour landmark sensitivity analysis to evaluate whether the central pattern depended on aggregating information over the full episode. In this analysis, features were recomputed using only measurements recorded during the first 24 hours after ICU admission; patients whose identifiable death or discharge occurred before the end of this observation window were excluded. The resulting cohort included 124 MIMIC episodes (34 deaths, 27.4\%) and 2,438 eICU episodes (158 deaths, 6.5\%). Under this stricter design, Random Forest still produced no true positives in Train eICU $\rightarrow$ Test MIMIC (AUC-ROC 0.584, F1-score 0.000), whereas Gradient Boosting recovered only two true positives (recall 0.059, F1-score 0.100, AUC-ROC 0.535). Logistic Regression shifted toward high sensitivity but poor specificity, producing 33 true positives and 89 false positives (recall 0.971, precision 0.270, AUC-ROC 0.532). Thus, the exact magnitude of the results changes under landmark restriction, but the broader conclusion remains: cross-domain transfer strongly destabilizes the relationship between predicted probabilities and operational classification at a fixed threshold.}
+
+\begin{table}[h]
+	\caption{\textcolor{red}{Twenty-four-hour landmark sensitivity analysis for cross-domain transfer. E2M denotes Train eICU $\rightarrow$ Test MIMIC; M2E denotes Train MIMIC $\rightarrow$ Test eICU.}}
+	\label{tab:landmark_24h_transfer}
+	\setlength{\tabcolsep}{3pt}
+	\tiny
+	\begin{tabular}{lllllll}
+		\hline
+		\textbf{\textcolor{red}{Scenario}} & \textbf{\textcolor{red}{Model}} & \textbf{\textcolor{red}{Accuracy}} & \textbf{\textcolor{red}{Precision}} & \textbf{\textcolor{red}{Recall}} & \textbf{\textcolor{red}{F1-score}} & \textbf{\textcolor{red}{AUC-ROC}} \\ \hline
+		\textcolor{red}{E2M} & \textcolor{red}{Logistic} & \textcolor{red}{0.274} & \textcolor{red}{0.270} & \textcolor{red}{0.971} & \textcolor{red}{0.423} & \textcolor{red}{0.532} \\
+		\textcolor{red}{E2M} & \textcolor{red}{RF} & \textcolor{red}{0.726} & \textcolor{red}{0.000} & \textcolor{red}{0.000} & \textcolor{red}{0.000} & \textcolor{red}{0.584} \\
+		\textcolor{red}{E2M} & \textcolor{red}{GB} & \textcolor{red}{0.710} & \textcolor{red}{0.333} & \textcolor{red}{0.059} & \textcolor{red}{0.100} & \textcolor{red}{0.535} \\
+		\textcolor{red}{M2E} & \textcolor{red}{Logistic} & \textcolor{red}{0.573} & \textcolor{red}{0.075} & \textcolor{red}{0.494} & \textcolor{red}{0.130} & \textcolor{red}{0.543} \\
+		\textcolor{red}{M2E} & \textcolor{red}{RF} & \textcolor{red}{0.924} & \textcolor{red}{0.062} & \textcolor{red}{0.013} & \textcolor{red}{0.021} & \textcolor{red}{0.572} \\
+		\textcolor{red}{M2E} & \textcolor{red}{GB} & \textcolor{red}{0.822} & \textcolor{red}{0.066} & \textcolor{red}{0.133} & \textcolor{red}{0.088} & \textcolor{red}{0.536} \\ \hline
+	\end{tabular}
+\end{table}
+
+\textcolor{red}{The strict shared-feature sensitivity analysis further clarifies the role of variable equivalence (Table~\ref{tab:shared_feature_transfer}). In Train eICU $\rightarrow$ Test MIMIC, Random Forest still generated no true positives after excluding eICU-specific and source-absent predictors (sensitivity 0.000, F1-score 0.000, AUC-ROC 0.692). Logistic Regression improved its sensitivity from 0.348 to 0.500, with F1-score increasing from 0.381 to 0.455. Gradient Boosting no longer produced a complete fixed-threshold collapse under this restriction, recovering 12 true positives (sensitivity 0.261, precision 0.667, F1-score 0.375, AUC-ROC 0.750). Therefore, the Random Forest transfer failure is robust to removal of non-shared variables, whereas the Gradient Boosting result is more sensitive to the original feature-alignment schema. In Train MIMIC $\rightarrow$ Test eICU, the shared-feature restriction produced results similar to the primary analysis because the MIMIC-trained models could not use eICU-only variables at training time.}
+
+\begin{table}[h]
+	\caption{\textcolor{red}{Cross-domain transfer sensitivity restricted to predictors observed in both MIMIC and eICU. E2M denotes Train eICU $\rightarrow$ Test MIMIC; M2E denotes Train MIMIC $\rightarrow$ Test eICU.}}
+	\label{tab:shared_feature_transfer}
+	\setlength{\tabcolsep}{3pt}
+	\tiny
+	\begin{tabular}{lllllll}
+		\hline
+		\textbf{\textcolor{red}{Scenario}} & \textbf{\textcolor{red}{Model}} & \textbf{\textcolor{red}{Accuracy}} & \textbf{\textcolor{red}{Precision}} & \textbf{\textcolor{red}{Recall}} & \textbf{\textcolor{red}{F1-score}} & \textbf{\textcolor{red}{AUC-ROC}} \\ \hline
+		\textcolor{red}{E2M} & \textcolor{red}{Logistic} & \textcolor{red}{0.596} & \textcolor{red}{0.418} & \textcolor{red}{0.500} & \textcolor{red}{0.455} & \textcolor{red}{0.593} \\
+		\textcolor{red}{E2M} & \textcolor{red}{RF} & \textcolor{red}{0.654} & \textcolor{red}{0.000} & \textcolor{red}{0.000} & \textcolor{red}{0.000} & \textcolor{red}{0.692} \\
+		\textcolor{red}{E2M} & \textcolor{red}{GB} & \textcolor{red}{0.706} & \textcolor{red}{0.667} & \textcolor{red}{0.261} & \textcolor{red}{0.375} & \textcolor{red}{0.750} \\
+		\textcolor{red}{M2E} & \textcolor{red}{Logistic} & \textcolor{red}{0.754} & \textcolor{red}{0.140} & \textcolor{red}{0.374} & \textcolor{red}{0.204} & \textcolor{red}{0.694} \\
+		\textcolor{red}{M2E} & \textcolor{red}{RF} & \textcolor{red}{0.887} & \textcolor{red}{0.268} & \textcolor{red}{0.194} & \textcolor{red}{0.225} & \textcolor{red}{0.661} \\
+		\textcolor{red}{M2E} & \textcolor{red}{GB} & \textcolor{red}{0.808} & \textcolor{red}{0.133} & \textcolor{red}{0.232} & \textcolor{red}{0.169} & \textcolor{red}{0.617} \\ \hline
+	\end{tabular}
+\end{table}
+
+\subsection{Analysis of the model's behavior}
+In Figure~\ref{fig:fig4}(a), corresponding to Logistic Regression in the Train eICU $\rightarrow$ Test MIMIC scenario, the probability distribution shows moderate dispersion in both classes, with a fraction of the positive class approaching the decision threshold. Although \textcolor{red}{substantial} overlap between classes persists, the presence of values in the intermediate range allows the threshold $\tau = 0.5$ to trigger assignment to the positive class in a subset of observations, reflecting partial probabilistic separation.
+
+\begin{figure}[h!]
+	\begin{center}
+		\includegraphics[width=17cm]{Fig4.jpg}% This is a *.eps file
+	\end{center}
+	\caption{Predicted probability distributions across cross-domain transfer scenarios. (a--c) Train eICU $\rightarrow$ Test MIMIC and (d--f) Train MIMIC $\rightarrow$ Test eICU for Logistic Regression, Random Forest, and Gradient Boosting.}\label{fig:fig4}
+\end{figure}
+
+In Figures~\ref{fig:fig4}(b) and~\ref{fig:fig4}(c), corresponding to Random Forest and Gradient Boosting in the same scenario, the distributions show an extreme concentration of probabilities at values close to zero for both classes. This configuration implies that $f_{\theta}(x) < \tau$ for all observations, which induces systematic assignment to the negative class. Under this condition, the decision threshold ceases to act as a discriminatory mechanism and becomes a constant operator, eliminating the possibility of generating positive predictions regardless of the actual class.
+
+In Figure~\ref{fig:fig4}(d), corresponding to Logistic Regression in the Train MIMIC $\rightarrow$ Test eICU scenario, the probability distribution shows greater dispersion than in the previous scenario. The positive class extends to intermediate values, allowing a fraction of the observations to exceed the decision threshold. This behavior indicates that, although the separation between classes remains limited, the structure of $f_{\theta}(x)$ retains some capacity to generate positive decisions under transfer conditions.
+
+In Figures~\ref{fig:fig4}(e) and~\ref{fig:fig4}(f), corresponding to Random Forest and Gradient Boosting in this scenario, the distributions show greater variability than in the Train eICU $\rightarrow$ Test MIMIC case. However, they do not achieve effective separation between classes. The probability mass associated with the positive class is concentrated predominantly below the threshold, with considerable overlap with that of the negative class. This configuration limits the activation of the positive class and reduces the effectiveness of the threshold as a decision mechanism.
+
+The analysis of Table~\ref{tab:decision_space_analysis} allows quantification of these behavioral patterns in terms of classification decisions. In the Train eICU $\rightarrow$ Test MIMIC scenario, Random Forest and Gradient Boosting exhibit a configuration with $TN=90$, $FP=0$, $FN=46$, and $TP=0$, which implies $f_{\theta}(x)<\tau$ for all observations. Under this condition, the threshold acts as a constant operator that assigns all instances to the negative class, eliminating activation of the positive class. \textcolor{red}{This behavior should be interpreted as a total loss of positive-class activation under the transported fixed threshold, not as a total loss of discrimination, because the AUC-ROC values indicate that some rank-ordering information is still preserved.} Conversely, Logistic Regression in the same scenario presents $TN=68$, $FP=22$, $FN=30$, and $TP=16$, indicating that a fraction of the predicted probabilities exceeds the threshold $\tau$. This configuration produces a sensitivity of 0.348 and a specificity of 0.756, demonstrating that, although overlap between classes persists, the distribution of $f_{\theta}(x)$ maintains an activation region for the positive class.
+
+\begin{table}[h]
+	\caption{Confusion matrix summary and classification performance under cross-domain transfer scenarios}
+	\label{tab:decision_space_analysis}
+	\setlength{\tabcolsep}{3pt}
+	\begin{tabular}{p{145pt}p{50pt}p{35pt}p{35pt}p{35pt}p{35pt}p{55pt}p{55pt}}
+		\hline
+		\textbf{Scenario} & \textbf{Model} & \textbf{TN} & \textbf{FP} & \textbf{FN} & \textbf{TP} & \textbf{Sensitivity} & \textbf{Specificity} \\ \hline
+		
+		Train eICU $\rightarrow$ Test MIMIC & Logistic & 68 & 22 & 30 & 16 & 0.348 & 0.756 \\
+		Train eICU $\rightarrow$ Test MIMIC & RF & 90 & 0 & 46 & 0 & 0.000 & 1.000 \\
+		Train eICU $\rightarrow$ Test MIMIC & GB & 90 & 0 & 46 & 0 & 0.000 & 1.000 \\
+		
+		Train MIMIC $\rightarrow$ Test eICU & Logistic & 2654 & 712 & 194 & 116 & 0.374 & 0.788 \\
+		Train MIMIC $\rightarrow$ Test eICU & RF & 3202 & 164 & 250 & 60 & 0.194 & 0.951 \\
+		Train MIMIC $\rightarrow$ Test eICU & GB & 2898 & 468 & 238 & 72 & 0.232 & 0.861 \\ \hline
+		
+	\end{tabular}
+	\footnotesize
+\end{table}
+
+In the Train MIMIC $\rightarrow$ Test eICU scenario, the confusion matrix structure reflects a distinct interaction between the probability distribution and the decision threshold. Logistic Regression shows $TP=116$ and $FN=194$, corresponding to a sensitivity of 0.374, indicating that a limited proportion of the positive class exceeds the threshold. For Random Forest and Gradient Boosting, $TP=60$ and $TP=72$ are obtained, respectively, with sensitivities of 0.194 and 0.232, indicating reduced activation of the positive class relative to the linear model.
+
+In all models, the $TN$ values are considerably high (2654, 3202, and 2898), indicating that most observations remain below the $\tau$ threshold. However, the $FN$ values of 194, 250, and 238 indicate that a \textcolor{red}{large} fraction of the positive class does not reach the probability threshold required for correct classification. This pattern is consistent with $f_{\theta}(x)$ distributions that, although more dispersed than in the previous scenario, remain concentrated in regions below the decision threshold.
+
+\subsection{\textcolor{red}{Exploratory descriptive extension (MedDialog)}}
+\textcolor{red}{MedDialog is reported only as a descriptive supplementary component and is not part of the mortality-prediction experiment. Unlike the clinical environments analyzed above, MedDialog has no hospital-mortality endpoint and no physiological feature space comparable to MIMIC or eICU. Therefore, this section should not be interpreted as cross-domain predictive validation. Its only purpose is to document that the preprocessing workflow can generate simple quantitative descriptors from unstructured conversational records while preserving provenance.}
+
+The characterization of the MedDialog dataset reveals a highly restricted conversational structure, as shown in Table~\ref{tab:meddialog_statistics}. The variable \texttt{total\_turns} has a mean of 2.035 and a standard deviation of 0.689. At the same time, the first quartile, median, and third quartile all coincide at 2.00, indicating that most dialogues consist of only two turns. This behavior is confirmed by a proportion of 0.9959 dialogues that have exactly two turns, indicating an almost complete absence of multi-turn interaction.
+
+\begin{table}[h]
+	\caption{Descriptive statistics of the MedDialog conversational dataset, including structural and textual characteristics of dialogues}
+	\label{tab:meddialog_statistics}
+	\setlength{\tabcolsep}{3pt}
+	\begin{tabular}{p{110pt}p{35pt}p{45pt}p{45pt}p{40pt}p{35pt}p{45pt}p{35pt}p{45pt}}
+		\hline
+		\textbf{Variable} & \textbf{N} & \textbf{Mean} & \textbf{Std} & \textbf{Min} & \textbf{Q1} & \textbf{Median} & \textbf{Q3} & \textbf{Max} \\ \hline
+		
+		Total turns & 482 & 2.035 & 0.689 & 2.000 & 2.00 & 2.00 & 2.00 & 17.000 \\
+		
+		Average turn length & 482 & 50.454 & 26.624 & 6.000 & 35.0 & 45.25 & 58.00 & 231.000 \\
+		
+		Turn length std. & 482 & 15.611 & 13.952 & 0.000 & 7.0 & 12.50 & 22.00 & 157.077 \\
+		
+		Total words & 482 & 105.832 & 124.240 & 12.000 & 70.0 & 90.50 & 116.75 & 2571.000 \\
+		
+		Patient ratio & 482 & 0.500 & 0.001 & 0.500 & 0.5 & 0.50 & 0.50 & 0.529 \\
+		
+		Doctor ratio & 482 & 0.500 & 0.001 & 0.471 & 0.5 & 0.50 & 0.50 & 0.500 \\
+		
+		Description length & 482 & 24.342 & 14.971 & 3.000 & 10.0 & 22.00 & 38.75 & 57.000 \\ \hline
+		
+	\end{tabular}
+	\footnotesize
+\end{table}
+
+Conversely, the variables associated with textual content exhibit greater variability. The average turn length is 50.454 words, with a standard deviation of 26.624 and a range of 6 to 231 words, indicating \textcolor{red}{marked} heterogeneity in intervention length. Consistently, the \texttt{total\_words} variable shows a mean of 105.832 words and a standard deviation of 124.240 words, with a maximum of 2,571 words, reflecting the coexistence of lengthy dialogues with \textcolor{red}{much} shorter interactions.
+
+The relationship between participants shows virtually constant behavior. The \texttt{patient\_ratio} and \texttt{doctor\_ratio} variables have mean values of 0.500 and standard deviations close to zero, indicating a balanced and controlled distribution of conversational roles, with no \textcolor{red}{meaningful} variation in participation structure.
+
+The variable \texttt{description\_length} has a mean of 24.342 words and a standard deviation of 14.971, suggesting moderate variability in the contextual information associated with each dialogue. However, this variability does not translate into greater conversational complexity, since the number of turns remains practically constant.
+
+\section{Discussion}
+The results show differential behavior between intra-domain and multi-domain scenarios, aligning with prior literature on dataset shift and generalization in clinical settings. In particular, the degradation observed in transfer scenarios is consistent with studies demonstrating the sensitivity of models to variations in the distribution of populations and clinical centers~\citet{Matta2024,Musa2026}. The concentration of probabilities in regions below the decision threshold, especially in tree-based models, reflects \textcolor{red}{threshold-specific failure of positive-class activation rather than complete loss of discrimination}, previously associated with differences in event prevalence and in the distributions of clinical variables~\citet{Chen2025,Wang2025}. \textcolor{red}{The shared-feature sensitivity analysis refines this interpretation: the Random Forest failure in eICU-to-MIMIC transfer persisted after excluding source-specific predictors, whereas Gradient Boosting recovered limited positive-class detection. Thus, the primary Gradient Boosting collapse appears partly dependent on the original imperfect feature-alignment schema, while the broader threshold-transportability problem remains present across analyses.} This phenomenon has also been linked to the instability of selected feature sets when transferred between domains, which directly affects model consistency~\citet{Theng2023}. Furthermore, the limited ability of models to maintain sensitivity in unobserved environments aligns with observations from multicenter studies, in which external validation reveals substantial performance drops relative to internal validation~\citet{Mercier2026}. Additionally, recent research has highlighted that the absence of explicit calibration and the use of fixed thresholds can amplify the effects of class imbalance and overlap, impacting the activation of the positive class~\citet{Dardour2025,Sowan2025,Vlasic2025}.
+
+Methodologically, the proposed approach allows analysis of model behavior beyond aggregated metrics by explicitly incorporating the relationship between the probability distribution $f_{\theta}(x)$ and the decision threshold $\tau$. \textcolor{red}{We have revised the framing of this component. The contribution is not that probability distributions and thresholds are novel in themselves, but that their joint inspection exposes an operational failure mode that aggregate discrimination metrics alone can obscure under cross-domain transfer.} This formulation introduces a level of analysis that enables identification of \textcolor{red}{fixed-threshold positive-class activation failure} not evident solely from metrics such as AUC-ROC or accuracy. In particular, the use of the decision-level behavior analysis framework allows interpretation of sensitivity loss as a direct consequence of the probability distribution structure, rather than attributing it exclusively to the model's predictive capacity. This approach provides an operational perspective that links the inference process to the decision mechanism, which is relevant in clinical settings where activation of the positive class has critical implications.
+
+Comparative analysis between models shows that, although tree-based methods perform better in intra-domain scenarios, their performance under transfer conditions degrades more \textcolor{red}{substantially} than that of linear models in the primary full-feature analysis. \textcolor{red}{This statement is strongest for Random Forest, which showed persistent fixed-threshold failure in both the primary and shared-feature eICU-to-MIMIC analyses. Gradient Boosting was less stable across specifications: it collapsed in the primary full-feature analysis but recovered partial sensitivity when restricted to variables observed in both domains.} This result suggests that the ability to capture nonlinear relationships may be associated with greater dependence on the training distribution, thereby reducing the model's robustness to domain shifts. Conversely, Logistic Regression, by imposing a more restrictive structure, maintains a more stable probability distribution, resulting in greater relative generalizability under conditions of distribution misalignment.
+
+The main contribution of this work lies in integrating a multi-environment evaluation protocol with an analytical framework focused on decision-level behavior. Unlike traditional approaches focused on improving global metrics, this study enables identification of specific conditions under which the model \textcolor{red}{loses threshold-transportability and positive-class activation}, thereby establishing an explicit relationship between the shape of the probability distribution and the structure of the confusion matrix. This approach is particularly relevant in clinical applications, where error interpretation and the ability to detect positive events are more critical than average performance.
+
+However, the results have limitations that should be considered when interpreting the findings. First, using a fixed threshold ($\tau = 0.5$) imposes a constraint that may be suboptimal in scenarios with \textcolor{red}{strong} class imbalance. Although this decision allows standardized comparison between models, it can also accentuate the loss of sensitivity in skewed distributions. \textcolor{red}{The added bootstrap, precision-recall, Brier-score, calibration-gap, and threshold-sensitivity analyses show that both sampling uncertainty and imperfect calibration are material, particularly in the eICU-to-MIMIC transfer where the MIMIC test set is small.} Second, the construction of the integrated dataset assumes structural alignment of variables across domains, which may mask semantic or clinical differences in their measurement. \textcolor{red}{This is not a merely theoretical limitation: the shared-feature sensitivity analysis showed that removing source-specific or source-absent predictors changed Gradient Boosting behavior.} This assumption may affect the model's validity in contexts where data acquisition protocols differ \textcolor{red}{substantially}.
+
+Additionally, the evaluation is based on retrospective datasets, which limits the generalizability of the results to prospective or real-time scenarios. \textcolor{red}{The original full-episode feature construction can include measurements obtained after a clinically plausible prediction time. For this reason, the original analysis should be read as a retrospective stress test of cross-domain transportability rather than as an early clinical prediction model. The added 24-hour landmark analysis partially addresses this limitation by restricting predictors to the first 24 hours after ICU admission. Its results show that the headline numerical values are sensitive to the temporal design, but the central operational concern remains: fixed-threshold decisions transfer poorly across MIMIC and eICU.} \textcolor{red}{Calibration was assessed only through summary measures and post hoc recalibration diagnostics; prospective calibration, calibration-in-the-large estimated in an independent deployment cohort, and clinically selected decision thresholds remain outside the scope of this study.} Although the analysis focuses on classic machine learning models, it does not explore more complex architectures that might exhibit different behaviors under transfer conditions. These limitations suggest that while the proposed approach enables identification of relevant patterns in model behavior, its application should account for specific adjustments tailored to the clinical domain, class balance, and the availability of representative data, especially in scenarios where decision-making depends on accurate detection of rare events.
+
+\textcolor{red}{Finally, this study does not perform hospital-level leave-site-out validation within eICU or patient-level clustered resampling, and the MIMIC demo cohort is too small to support definitive population-level claims. The findings should therefore be interpreted as evidence of a plausible and clinically important transfer-failure mechanism rather than as a definitive estimate of deployment performance in all ICU populations. Future work should use the full MIMIC and eICU resources, prespecified landmark times, patient-level de-duplication, site-aware validation, and reporting aligned with clinical prediction-model guidance such as TRIPOD-AI and PROBAST-AI.}
+
+\section{Conclusions}
+The study demonstrates that the performance of clinical prediction models cannot be evaluated solely with aggregated metrics within a single domain, as these do not reflect real-world behavior in transfer settings. The results show that models such as Random Forest and Gradient Boosting, which achieve high levels of accuracy and AUC-ROC in internal validation, exhibit structural degradation when evaluated in different domains, characterized by predominant allocation to the negative class. \textcolor{red}{This degradation was most robust for Random Forest; Gradient Boosting showed complete positive-class activation failure in the primary full-feature transfer but partial recovery in the strict shared-feature sensitivity analysis. We therefore interpret the finding as a failure of fixed-threshold decision transportability under dataset shift, not as proof that the fitted models contain no discriminative information.}
+
+In contrast, Logistic Regression maintains nonzero detection capacity in both transfer scenarios, indicating that its probabilistic structure is less sensitive to distributional shifts. However, this relative stability does not eliminate class overlap or the persistence of false negatives, thereby limiting sensitivity. This result demonstrates that the model's robustness should not be interpreted solely as preservation of global metrics, but rather as the ability to maintain a functional probability distribution under conditions of inter-domain misalignment.
+
+The analysis confirms that the relationship between the probability distribution $f_{\theta}(x)$ and the decision threshold $\tau$ is a determining factor in the model's behavior. When the probability mass is concentrated in regions below the threshold, the classification process converges to constant decisions, regardless of the actual class. This phenomenon explains the simultaneous presence of high specificity and the absence of positive-class detection in certain scenarios, which cannot be captured by metrics such as accuracy or AUC-ROC in isolation.
+
+This work introduces a multi-environment evaluation scheme that distinguishes between intra-domain performance and transfer behavior, and an analytical framework that explicitly links probabilistic estimation to the final decision. This integration enables identification of specific conditions under which the model \textcolor{red}{retains partial ranking ability but fails to activate the positive class under a transported threshold}, providing a level of interpretation not available in traditional approaches that focus exclusively on performance metrics.
+
+The results also demonstrate that integrating heterogeneous clinical datasets, while necessary to increase the model's representativeness, introduces challenges related to variable alignment and distributional consistency. The difference in size, structure, and distribution between MIMIC and eICU directly contributes to the emergence of misalignment patterns that affect the model's behavior, even when common variables are used. \textcolor{red}{For this reason, future external-validation studies should privilege clinically harmonized variable dictionaries over purely structural column alignment.}
+
+As a future line of work, it is proposed to incorporate probabilistic calibration strategies that allow adjustment of the relationship between $f_{\theta}(x)$ and the decision threshold based on the evaluation domain. It is also relevant to explore adaptive threshold approaches and learning methods that explicitly integrate information from multiple domains during training to reduce sensitivity to distributional changes. Extending the analysis to more complex models and prospective scenarios will allow evaluation of the generalizability of the proposed approach and its applicability in real-world clinical settings.
+
+
+
+\section{Additional Requirements}
+\section*{Conflict of Interest Statement}
+The authors declare that the research was conducted without any commercial or financial relationships that could be construed as a potential conflict of interest. The authors further confirm that no external entity had any influence on the study design, data collection, analysis, interpretation of results, or the decision to submit the manuscript for publication.
+
+\section*{Author Contributions}
+
+J.R.-D. assisted in data analysis and validation of experimental results. A.C.-A. and W.V.-C. conceptualized the study and designed the methodological framework. W.V.-C. conducted the data preparation, implemented the multi-environment modeling framework, and performed the machine learning experiments. A.C.-A. supported the validation of the experimental design and contributed to the interpretation of clinical variables and results. A.K.Z. contributed to the analysis from a health sciences perspective and supported the interpretation of results. W.V.-C. supervised the research, coordinated the overall study, and led the writing and revision of the manuscript. All authors reviewed and approved the final version of the manuscript and agree to be accountable for its content.
+
+\section*{Funding}
+
+This research received no external funding.
+
+\section*{Acknowledgments}
+
+The authors acknowledge the use of publicly available clinical datasets, including MIMIC and eICU, which made this study possible. \textcolor{red}{The authors also acknowledge MedDialog as the source used only for the exploratory descriptive extension.} The authors also recognize the contributions of the research community involved in the development and maintenance of open-access clinical data repositories.
+
+\section*{Data Availability Statement}
+
+\textcolor{red}{The clinical datasets analyzed in the primary mortality-prediction experiment are publicly available through PhysioNet, subject to the required credentialing, training, and data-use agreements. MIMIC-III Clinical Database Demo v1.4 is available from PhysioNet, and the eICU Collaborative Research Database is available from PhysioNet under its access conditions. MedDialog was used only for the exploratory descriptive extension and was not included in the mortality-prediction models. The derived feature tables, split definitions, prediction outputs, and analysis scripts generated for this study are available from the corresponding author upon reasonable request and will be deposited in a public repository where permitted by the source-data licenses and data-use agreements. The revision analyses added after peer review include bootstrap transfer intervals, Brier-score and calibration-gap summaries, post hoc threshold-sensitivity checks, random-seed sensitivity checks, class-weight sensitivity checks, and the 24-hour landmark reconstruction.}
+
+\bibliographystyle{Frontiers-Harvard} %  Many Frontiers journals use the Harvard referencing system (Author-date), to find the style and resources for the journal you are submitting to: https://zendesk.frontiersin.org/hc/en-us/articles/360017860337-Frontiers-Reference-Styles-by-Journal. For Humanities and Social Sciences articles please include page numbers in the in-text citations 
+%\bibliographystyle{Frontiers-Vancouver} % Many Frontiers journals use the numbered referencing system, to find the style and resources for the journal you are submitting to: https://zendesk.frontiersin.org/hc/en-us/articles/360017860337-Frontiers-Reference-Styles-by-Journal
+\bibliography{test}
+
+%%% Make sure to upload the bib file along with the tex file and PDF
+%%% Please see the test.bib file for some examples of references
+
+
+
+%%% If you don't add the figures in the LaTeX files, please upload them when submitting the article.
+%%% Frontiers will add the figures at the end of the provisional pdf automatically
+%%% The use of LaTeX coding to draw Diagrams/Figures/Structures should be avoided. They should be external callouts including graphics.
+
+\end{document}

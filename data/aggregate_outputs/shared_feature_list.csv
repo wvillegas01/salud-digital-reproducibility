@@ -1,0 +1,17 @@
+shared_features
+age
+gender
+hr_mean
+hr_std
+respiration_mean
+respiration_std
+glucose_mean
+glucose_std
+creatinine_mean
+creatinine_std
+wbc_mean
+wbc_std
+sodium_mean
+sodium_std
+bun_mean
+bun_std
