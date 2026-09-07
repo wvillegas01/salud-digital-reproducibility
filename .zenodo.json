@@ -1,0 +1,42 @@
+{
+  "title": "Salud Digital ICU Mortality Transfer Reproducibility Package",
+  "upload_type": "software",
+  "description": "Reproducibility package for the Salud Digital ICU mortality prediction study. The package contains analysis scripts, aggregate non-patient-level outputs, variable documentation, execution instructions, environment files, and revised manuscript materials for evaluating intra-domain validation and cross-domain transfer between MIMIC-III Demo and eICU-CRD. Patient-level MIMIC/eICU raw or derived records are not included because the source databases are PhysioNet clinical resources subject to credentialing, data-use agreements, and access controls.",
+  "creators": [
+    {
+      "name": "Robalino-Diaz, J."
+    }
+  ],
+  "keywords": [
+    "ICU mortality prediction",
+    "domain shift",
+    "external validation",
+    "clinical machine learning",
+    "MIMIC-III",
+    "eICU",
+    "calibration",
+    "reproducibility"
+  ],
+  "access_right": "open",
+  "version": "0.1.0",
+  "related_identifiers": [
+    {
+      "identifier": "https://github.com/wvillegas01/salud-digital-reproducibility",
+      "relation": "isSupplementTo",
+      "scheme": "url",
+      "resource_type": "software"
+    },
+    {
+      "identifier": "10.13026/C2HM2Q",
+      "relation": "references",
+      "scheme": "doi",
+      "resource_type": "dataset"
+    },
+    {
+      "identifier": "10.13026/C2WM1R",
+      "relation": "references",
+      "scheme": "doi",
+      "resource_type": "dataset"
+    }
+  ]
+}
