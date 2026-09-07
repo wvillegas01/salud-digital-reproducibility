@@ -85,16 +85,18 @@ def main():
 
     sns.set_theme(style="whitegrid", context="paper")
     fig, axes = plt.subplots(2, 3, figsize=(14, 7), sharex=True, sharey=False)
+    panel_labels = ["(a)", "(b)", "(c)", "(d)", "(e)", "(f)"]
     for row_idx, (scenario_name, _, _) in enumerate(scenarios):
         for col_idx, model_name in enumerate(models):
             ax = axes[row_idx, col_idx]
+            panel_label = panel_labels[row_idx * len(models) + col_idx]
             subset = pred[(pred["scenario"] == scenario_name) & (pred["model"] == model_name)]
             for label, color in [("Survival", "#2c7fb8"), ("Death", "#d95f0e")]:
                 values = subset.loc[subset["Mortality"] == label, "Predicted probability"]
                 sns.kdeplot(values, ax=ax, label=label, color=color, fill=False, linewidth=1.8, clip=(0, 1))
             ax.axvline(0.5, color="black", linestyle="--", linewidth=1)
             ax.set_xlim(0, 1)
-            ax.set_title(f"{scenario_name}\n{model_name}", fontsize=10)
+            ax.set_title(f"{panel_label} {scenario_name}\n{model_name}", fontsize=10)
             ax.set_xlabel("Predicted mortality probability")
             ax.set_ylabel("Density")
             if row_idx == 0 and col_idx == 2:

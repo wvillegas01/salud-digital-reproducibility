@@ -10,10 +10,10 @@ DATA = ROOT / "dataset_clinico_landmark_24h.csv"
 OUT = Path(r"C:\Users\wilop\Dropbox\MPDI\2026\Salud-digital\Frontiers_LaTeX_Templates\Fig3.jpg")
 
 PANELS = [
-    ("hr_mean", "Heart rate", "beats/min", (0, None)),
-    ("glucose_mean", "Glucose", "mg/dL", (0, None)),
-    ("creatinine_mean", "Creatinine", "mg/dL", (0, None)),
-    ("bp_sys_mean", "Systolic blood pressure", "mmHg", (0, None)),
+    ("hr_mean", "(a) Heart rate", "beats/min", (0, None)),
+    ("glucose_mean", "(b) Glucose", "mg/dL", (0, None)),
+    ("creatinine_mean", "(c) Creatinine", "mg/dL", (0, None)),
+    ("bp_sys_mean", "(d) Systolic blood pressure", "mmHg", (0, None)),
 ]
 
 
@@ -45,18 +45,6 @@ def main() -> None:
         ax.set_xlabel(unit)
         ax.set_ylabel("Density")
         ax.legend(frameon=False)
-
-    for label, ax in zip(["(a)", "(b)", "(c)", "(d)"], axes.flat):
-        ax.text(
-            0.02,
-            0.95,
-            label,
-            transform=ax.transAxes,
-            ha="left",
-            va="top",
-            fontsize=12,
-            fontweight="bold",
-        )
 
     fig.tight_layout()
     fig.savefig(OUT, dpi=300, bbox_inches="tight")
