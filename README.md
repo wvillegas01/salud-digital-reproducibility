@@ -21,12 +21,12 @@ Patient-level MIMIC/eICU raw or derived tables are not included in this public p
 
 The revised manuscript distinguishes four related analyses:
 
-1. Full-episode/full-feature retrospective analysis.
-2. Twenty-four-hour landmark analysis.
-3. Strict shared-feature transfer analysis.
-4. Calibration, threshold, bootstrap, seed, and class-weight sensitivity analyses.
+1. Primary twenty-four-hour shared-feature analysis.
+2. Full-episode/full-feature retrospective analysis.
+3. Secondary strict shared-feature transfer analysis.
+4. Calibration, threshold, bootstrap, exact-binomial interval, seed, and class-weight sensitivity analyses.
 
-The third and fourth analyses were added to address reviewer concerns about temporal leakage, fixed thresholds, calibration, uncertainty, class imbalance, random seeds, and imperfect feature equivalence.
+The primary analysis and supporting sensitivity analyses were added to address reviewer concerns about temporal leakage, fixed thresholds, calibration, uncertainty, class imbalance, random seeds, and imperfect feature equivalence.
 
 ## Software environment
 
