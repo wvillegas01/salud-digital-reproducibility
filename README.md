@@ -11,7 +11,7 @@ This package contains the code, aggregate outputs, variable documentation, and m
 - Aggregate, non-patient-level result files in `data/aggregate_outputs/`.
 - Schema-only examples in `data/schema_examples/`.
 - Variable and data-access documentation in `docs/`.
-- Revised LaTeX manuscript files in `manuscript/`.
+- Revised LaTeX manuscript files, compiled redline PDF, and revised manuscript figures in `manuscript/`.
 
 ## What is not included
 
@@ -27,6 +27,8 @@ The revised manuscript distinguishes four related analyses:
 4. Calibration, threshold, bootstrap, exact-binomial interval, seed, and class-weight sensitivity analyses.
 
 The primary analysis and supporting sensitivity analyses were added to address reviewer concerns about temporal leakage, fixed thresholds, calibration, uncertainty, class imbalance, random seeds, and imperfect feature equivalence.
+
+The v0.1.1 manuscript-alignment update adds primary 24-hour source-versus-transfer calibration diagnostics, repeated internal MIMIC cross-validation summaries, and a regenerated Figure 3 using only variables included in the primary shared-feature specification.
 
 ## Software environment
 
