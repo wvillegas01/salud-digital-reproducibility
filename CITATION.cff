@@ -4,8 +4,8 @@ message: "If you use this reproducibility package, please cite the associated ma
 authors:
   - family-names: "Robalino-Diaz"
     given-names: "J."
-version: "0.1.0"
-date-released: "2026-09-07"
+version: "0.2.0"
+date-released: "2026-09-15"
 doi: "10.5281/zenodo.22645170"
 url: "https://doi.org/10.5281/zenodo.22645170"
 repository-code: "https://github.com/wvillegas01/salud-digital-reproducibility"
