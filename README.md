@@ -28,11 +28,11 @@ The revised manuscript distinguishes four related analyses:
 
 The primary analysis and supporting sensitivity analyses were added to address reviewer concerns about temporal leakage, fixed thresholds, calibration, uncertainty, class imbalance, random seeds, and imperfect feature equivalence.
 
-The v0.1.1 manuscript-alignment update adds primary 24-hour source-versus-transfer calibration diagnostics, repeated internal MIMIC cross-validation summaries, and a regenerated Figure 3 using only variables included in the primary shared-feature specification.
+The v0.1.1 manuscript-alignment update adds a full primary 24-hour audit. The MIMIC extraction now aggregates laboratory measurements by ICU stay rather than hospital admission, uses explicit MIMIC item identifiers and eICU lab-name mappings, applies death or discharge landmark eligibility consistently, obtains the eICU outcome from `apachePatientResult.actualhospitalmortality`, excludes high-missingness temperature descriptors from the primary shared-feature set, and adds patient-grouped internal validation.
 
 ## Software environment
 
-The analyses were run with Python 3.8.10, scikit-learn 1.3.2, pandas 2.0.3, and NumPy 1.24.3.
+The final regenerated primary outputs were run with Python 3.12, scikit-learn 1.8.0, pandas 2.2.2, and NumPy 2.0.2. Earlier secondary outputs were generated under Python 3.8.10, scikit-learn 1.3.2, pandas 2.0.3, and NumPy 1.24.3.
 
 ## Citation
 

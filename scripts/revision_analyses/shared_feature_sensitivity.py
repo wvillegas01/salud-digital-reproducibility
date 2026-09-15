@@ -21,7 +21,7 @@ from sklearn.preprocessing import OneHotEncoder, StandardScaler
 DATA_PATH = Path(r"C:\Users\wilop\Documents\Datos-generales\Clinicos\dataset_clinico_final_mimic_eicu.csv")
 OUT_DIR = Path(r"C:\Users\wilop\Documents\Codex\2026-09-06\ha\work")
 TARGET = "target_mortality"
-ID_COLUMNS = ["case_id", "source_dataset", "environment_type"]
+ID_COLUMNS = ["case_id", "patient_group_id", "admission_group_id", "source_dataset", "environment_type"]
 
 
 def build_pipeline(model, numeric_features, categorical_features):
@@ -47,8 +47,8 @@ def build_pipeline(model, numeric_features, categorical_features):
 
 
 def evaluate(model, x_test, y_test, scenario, model_name):
-    y_pred = model.predict(x_test)
     y_score = model.predict_proba(x_test)[:, 1]
+    y_pred = (y_score >= 0.5).astype(int)
     tn, fp, fn, tp = confusion_matrix(y_test, y_pred, labels=[0, 1]).ravel()
     return {
         "scenario": scenario,

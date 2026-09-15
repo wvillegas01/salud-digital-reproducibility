@@ -23,7 +23,7 @@ from sklearn.preprocessing import OneHotEncoder, StandardScaler
 OUT = Path(r"C:\Users\wilop\Documents\Codex\2026-09-06\ha\work")
 DATA_PATH = OUT / "dataset_clinico_landmark_24h.csv"
 TARGET = "target_mortality"
-ID_COLUMNS = ["case_id", "source_dataset", "environment_type"]
+ID_COLUMNS = ["case_id", "patient_group_id", "admission_group_id", "source_dataset", "environment_type"]
 N_BOOT = 2000
 SEED = 20260907
 
@@ -124,7 +124,7 @@ def main():
     shared_features = [
         col
         for col in candidate_features
-        if all(missing_by_source.loc[source, col] < 1.0 for source in missing_by_source.index)
+        if all(missing_by_source.loc[source, col] <= 0.60 for source in missing_by_source.index)
     ]
     x = df[shared_features]
     categorical_features = [col for col in x.columns if x[col].dtype == "object"]
@@ -146,8 +146,8 @@ def main():
             pipe = build_pipeline(model, numeric_features, categorical_features)
             pipe.fit(train_df[shared_features], train_df[TARGET])
             y_true = test_df[TARGET].to_numpy()
-            y_pred = pipe.predict(test_df[shared_features])
             y_score = pipe.predict_proba(test_df[shared_features])[:, 1]
+            y_pred = (y_score >= 0.5).astype(int)
             row = {"scenario": scenario, "model": model_name}
             row.update(point_metrics(y_true, y_pred, y_score))
             row.update(bootstrap_metrics(y_true, y_pred, y_score))

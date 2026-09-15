@@ -17,7 +17,7 @@ from sklearn.metrics import (
     recall_score,
     roc_auc_score,
 )
-from sklearn.model_selection import RepeatedStratifiedKFold, StratifiedKFold, cross_val_predict
+from sklearn.model_selection import RepeatedStratifiedKFold, StratifiedGroupKFold, StratifiedKFold, cross_val_predict
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 
@@ -25,7 +25,7 @@ from sklearn.preprocessing import OneHotEncoder, StandardScaler
 OUT = Path(r"C:\Users\wilop\Documents\Codex\2026-09-06\ha\work")
 DATA_PATH = OUT / "dataset_clinico_landmark_24h.csv"
 TARGET = "target_mortality"
-ID_COLUMNS = ["case_id", "source_dataset", "environment_type"]
+ID_COLUMNS = ["case_id", "patient_group_id", "admission_group_id", "source_dataset", "environment_type"]
 EPS = 1e-6
 
 
@@ -109,7 +109,7 @@ def main():
     shared_features = [
         col
         for col in candidate_features
-        if all(missing_by_source.loc[source, col] < 1.0 for source in missing_by_source.index)
+        if all(missing_by_source.loc[source, col] <= 0.60 for source in missing_by_source.index)
     ]
     categorical_features = [col for col in shared_features if df[col].dtype == "object"]
     numeric_features = [col for col in shared_features if col not in categorical_features]
@@ -147,6 +147,25 @@ def main():
             )[:, 1]
             internal_rows.append(metrics(source_df[TARGET].to_numpy(), y_score, source_label, model_name))
 
+    grouped_rows = []
+    for source_label, source_df in [
+        ("eICU internal patient-grouped 5-fold OOF", df_eicu),
+        ("MIMIC internal patient-grouped 5-fold OOF", df_mimic),
+    ]:
+        cv = StratifiedGroupKFold(n_splits=5, shuffle=True, random_state=42)
+        groups = source_df["patient_group_id"].astype(str)
+        for model_name, model in models.items():
+            pipe = build_pipeline(clone(model), numeric_features, categorical_features)
+            y_score = cross_val_predict(
+                pipe,
+                source_df[shared_features],
+                source_df[TARGET],
+                cv=cv,
+                groups=groups,
+                method="predict_proba",
+            )[:, 1]
+            grouped_rows.append(metrics(source_df[TARGET].to_numpy(), y_score, source_label, model_name))
+
     repeated_rows = []
     repeated_cv = RepeatedStratifiedKFold(n_splits=5, n_repeats=20, random_state=42)
     for model_name, model in models.items():
@@ -169,6 +188,7 @@ def main():
         repeated_rows.append(summary)
 
     pd.DataFrame(rows + internal_rows).to_csv(OUT / "primary_24h_shared_calibration_transfer_internal.csv", index=False)
+    pd.DataFrame(grouped_rows).to_csv(OUT / "primary_24h_patient_grouped_internal_validation.csv", index=False)
     pd.DataFrame(repeated_rows).to_csv(OUT / "mimic_internal_repeated_cv_summary.csv", index=False)
 
 

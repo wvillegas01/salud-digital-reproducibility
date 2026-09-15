@@ -16,5 +16,11 @@
 - [x] Twenty-four-hour landmark sensitivity included.
 - [x] Strict shared-feature sensitivity included.
 - [x] Primary 24-hour shared-feature analysis included.
+- [x] Explicit MIMIC item-id and eICU lab-name mappings archived.
+- [x] Corrected MIMIC laboratory aggregation audited at ICU-stay level.
+- [x] eICU outcome source corrected to `apachePatientResult.actualhospitalmortality`.
+- [x] Primary missingness rule audited; high-missingness temperature descriptors excluded from the primary shared-feature set.
+- [x] Patient-grouped internal validation included.
+- [x] Primary seed and class-weight sensitivities use the same 24-hour shared-feature cohort as the main analysis.
 - [ ] Full patient-level data not redistributed publicly because source data are access-controlled.
 - [ ] Full MIMIC/eICU replication should be run by authorized users before definitive deployment claims.

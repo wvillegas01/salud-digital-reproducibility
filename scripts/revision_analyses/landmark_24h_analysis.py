@@ -36,6 +36,34 @@ FEATURES = [
     "bun_mean", "bun_min", "bun_max",
 ]
 
+LAB_ITEMIDS_MIMIC = {
+    "glucose": [50809, 50931],
+    "creatinine": [50912],
+    "wbc": [51301],
+    "hematocrit": [50810, 51221],
+    "sodium": [50824, 50983],
+    "bun": [51006],
+}
+
+CHART_ITEMIDS_MIMIC = {
+    "hr": [211, 220045],
+    "temperature_c": [676, 677, 223762, 226329],
+    "temperature_f": [678, 679, 223761],
+    "respiration": [618, 220210],
+    "bp_sys": [51, 442, 455, 220050, 220179, 224167, 225309, 227243],
+    "bp_dia": [8368, 8440, 8441, 220051, 220180, 224643, 225310, 227242],
+    "bp_mean": [52, 456, 220052, 220181, 225312],
+}
+
+LAB_NAMES_EICU = {
+    "glucose": ["glucose"],
+    "creatinine": ["creatinine"],
+    "wbc": ["wbc x 1000"],
+    "hematocrit": ["hct"],
+    "sodium": ["sodium"],
+    "bun": ["bun"],
+}
+
 
 def normalize_gender(value):
     if pd.isna(value):
@@ -56,6 +84,17 @@ def aggregate_measurements(df, group_col, value_col, prefix):
     return tmp
 
 
+def mortality_to_binary(x):
+    if pd.isna(x):
+        return np.nan
+    x = str(x).strip().lower()
+    if x in ["alive", "0", "false", "no"]:
+        return 0
+    if x in ["expired", "dead", "1", "true", "yes"]:
+        return 1
+    return np.nan
+
+
 def build_mimic_24h():
     patients = pd.read_csv(MIMIC / "PATIENTS.csv", low_memory=False)
     admissions = pd.read_csv(MIMIC / "ADMISSIONS.csv", low_memory=False)
@@ -66,14 +105,16 @@ def build_mimic_24h():
     d_items = pd.read_csv(MIMIC / "D_ITEMS.csv", low_memory=False)
 
     base = icustays.merge(
-        admissions[["subject_id", "hadm_id", "hospital_expire_flag", "admittime", "deathtime"]],
+        admissions[["subject_id", "hadm_id", "hospital_expire_flag", "admittime", "dischtime", "deathtime"]],
         on=["subject_id", "hadm_id"],
         how="left",
     ).merge(patients[["subject_id", "gender", "dob"]], on="subject_id", how="left")
 
     base["intime"] = pd.to_datetime(base["intime"], errors="coerce")
+    base["outtime"] = pd.to_datetime(base["outtime"], errors="coerce")
     base["deathtime"] = pd.to_datetime(base["deathtime"], errors="coerce")
     base["admittime"] = pd.to_datetime(base["admittime"], errors="coerce")
+    base["dischtime"] = pd.to_datetime(base["dischtime"], errors="coerce")
     base["dob"] = pd.to_datetime(base["dob"], errors="coerce")
     base["age"] = base["admittime"].dt.year - base["dob"].dt.year
     base.loc[base["age"] > 120, "age"] = 90
@@ -81,56 +122,48 @@ def build_mimic_24h():
     base["gender"] = base["gender"].apply(normalize_gender)
     base["window_end"] = base["intime"] + pd.Timedelta(hours=WINDOW_HOURS)
 
-    early_outcome = (base["hospital_expire_flag"] == 1) & base["deathtime"].notna() & (base["deathtime"] <= base["window_end"])
-    base = base[~early_outcome].copy()
+    early_death = (base["hospital_expire_flag"] == 1) & base["deathtime"].notna() & (base["deathtime"] <= base["window_end"])
+    early_icu_discharge = base["outtime"].notna() & (base["outtime"] <= base["window_end"])
+    early_hospital_discharge = base["dischtime"].notna() & (base["dischtime"] <= base["window_end"])
+    base = base[~(early_death | early_icu_discharge | early_hospital_discharge)].copy()
 
     labs = labevents.merge(d_labitems[["itemid", "label"]], on="itemid", how="left")
-    labs = labs.merge(base[["hadm_id", "intime", "window_end"]], on="hadm_id", how="inner")
+    labs = labs.merge(base[["subject_id", "hadm_id", "icustay_id", "intime", "window_end"]], on=["subject_id", "hadm_id"], how="inner")
     labs["charttime"] = pd.to_datetime(labs["charttime"], errors="coerce")
     labs["valuenum"] = pd.to_numeric(labs["valuenum"], errors="coerce")
     labs = labs[(labs["charttime"] >= labs["intime"]) & (labs["charttime"] <= labs["window_end"])]
-    labs["label_lower"] = labs["label"].astype(str).str.lower()
-
-    lab_map = {
-        "glucose": ["glucose"],
-        "creatinine": ["creatinine"],
-        "wbc": ["white blood cells", "wbc"],
-        "hematocrit": ["hematocrit"],
-        "sodium": ["sodium"],
-        "bun": ["urea nitrogen", "bun"],
-    }
-    for feature, keywords in lab_map.items():
-        mask = labs["label_lower"].apply(lambda x: any(k in x for k in keywords))
-        base = base.merge(aggregate_measurements(labs.loc[mask], "hadm_id", "valuenum", feature), on="hadm_id", how="left")
+    for feature, itemids in LAB_ITEMIDS_MIMIC.items():
+        mask = labs["itemid"].isin(itemids)
+        base = base.merge(aggregate_measurements(labs.loc[mask], "icustay_id", "valuenum", feature), on="icustay_id", how="left")
 
     chart = chartevents.merge(d_items[["itemid", "label"]], on="itemid", how="left")
     chart = chart.merge(base[["icustay_id", "intime", "window_end"]], on="icustay_id", how="inner")
     chart["charttime"] = pd.to_datetime(chart["charttime"], errors="coerce")
     chart["valuenum"] = pd.to_numeric(chart["valuenum"], errors="coerce")
     chart = chart[(chart["charttime"] >= chart["intime"]) & (chart["charttime"] <= chart["window_end"])]
-    chart["label_lower"] = chart["label"].astype(str).str.lower()
+    temp_c = chart.loc[chart["itemid"].isin(CHART_ITEMIDS_MIMIC["temperature_c"]), ["icustay_id", "valuenum"]].copy()
+    temp_f = chart.loc[chart["itemid"].isin(CHART_ITEMIDS_MIMIC["temperature_f"]), ["icustay_id", "valuenum"]].copy()
+    temp_f["valuenum"] = (temp_f["valuenum"] - 32) * 5 / 9
+    temp = pd.concat([temp_c, temp_f], ignore_index=True)
+    temp = temp[(temp["valuenum"] >= 25) & (temp["valuenum"] <= 45)]
+    base = base.merge(aggregate_measurements(temp, "icustay_id", "valuenum", "temperature"), on="icustay_id", how="left")
 
-    vital_map = {
-        "hr": ["heart rate"],
-        "temperature": ["temperature"],
-        "respiration": ["respiratory rate"],
-        "bp_sys": ["systolic"],
-        "bp_dia": ["diastolic"],
-        "bp_mean": ["mean arterial pressure", "arterial pressure mean"],
-    }
-    for feature, keywords in vital_map.items():
-        mask = chart["label_lower"].apply(lambda x: any(k in x for k in keywords))
+    for feature in ["hr", "respiration", "bp_sys", "bp_dia", "bp_mean"]:
+        mask = chart["itemid"].isin(CHART_ITEMIDS_MIMIC[feature])
         base = base.merge(aggregate_measurements(chart.loc[mask], "icustay_id", "valuenum", feature), on="icustay_id", how="left")
 
     base["source_dataset"] = "MIMIC"
     base["environment_type"] = "single_center_icu"
     base["case_id"] = base["icustay_id"]
+    base["patient_group_id"] = "MIMIC_" + base["subject_id"].astype(str)
+    base["admission_group_id"] = "MIMIC_" + base["hadm_id"].astype(str)
     base["target_mortality"] = base["hospital_expire_flag"]
-    return base[["source_dataset", "environment_type", "case_id", "age", "gender", *[c for c in FEATURES if c not in ["age", "gender"]], "target_mortality"]]
+    return base[["source_dataset", "environment_type", "case_id", "patient_group_id", "admission_group_id", "age", "gender", *[c for c in FEATURES if c not in ["age", "gender"]], "target_mortality"]]
 
 
 def build_eicu_24h():
     patient = pd.read_csv(EICU / "patient.csv.gz", compression="gzip", low_memory=False)
+    apache = pd.read_csv(EICU / "apachePatientResult.csv.gz", compression="gzip", low_memory=False)
     vital = pd.read_csv(EICU / "vitalPeriodic.csv.gz", compression="gzip", low_memory=False)
     vital_ap = pd.read_csv(EICU / "vitalAperiodic.csv.gz", compression="gzip", low_memory=False)
     lab = pd.read_csv(EICU / "lab.csv.gz", compression="gzip", low_memory=False)
@@ -139,21 +172,21 @@ def build_eicu_24h():
     base["age"] = pd.to_numeric(base["age"], errors="coerce")
     base["gender"] = base["gender"].apply(normalize_gender)
 
-    def mortality_to_binary(x):
-        if pd.isna(x):
-            return np.nan
-        x = str(x).strip().lower()
-        if x in ["alive", "0", "false", "no"]:
-            return 0
-        if x in ["expired", "dead", "1", "true", "yes"]:
-            return 1
-        return np.nan
-
-    base["target_mortality"] = base["hospitaldischargestatus"].apply(mortality_to_binary)
-    early_outcome = (base["target_mortality"] == 1) & (pd.to_numeric(base["hospitaldischargeoffset"], errors="coerce") <= WINDOW_MINUTES)
-    base = base[~early_outcome].copy()
+    apache = apache[["patientunitstayid", "apacheversion", "actualhospitalmortality"]].copy()
+    apache["target_mortality"] = apache["actualhospitalmortality"].apply(mortality_to_binary)
+    apache["apache_priority"] = apache["apacheversion"].astype(str).str.lower().map({"iva": 0, "iv": 1}).fillna(2)
+    apache = apache.sort_values(["patientunitstayid", "apache_priority"]).drop_duplicates("patientunitstayid")
+    base = base.merge(apache[["patientunitstayid", "target_mortality"]], on="patientunitstayid", how="left")
+    unit_discharge_offset = pd.to_numeric(base["unitdischargeoffset"], errors="coerce")
+    hospital_discharge_offset = pd.to_numeric(base["hospitaldischargeoffset"], errors="coerce")
+    early_unit_discharge = unit_discharge_offset.notna() & (unit_discharge_offset <= WINDOW_MINUTES)
+    early_hospital_discharge = hospital_discharge_offset.notna() & (hospital_discharge_offset <= WINDOW_MINUTES)
+    base = base[~(early_unit_discharge | early_hospital_discharge)].copy()
 
     vital = vital[(vital["observationoffset"] >= 0) & (vital["observationoffset"] <= WINDOW_MINUTES)].copy()
+    vital["temperature"] = pd.to_numeric(vital["temperature"], errors="coerce")
+    vital.loc[vital["temperature"] > 60, "temperature"] = (vital.loc[vital["temperature"] > 60, "temperature"] - 32) * 5 / 9
+    vital.loc[~vital["temperature"].between(25, 45), "temperature"] = np.nan
     vital_cols = {
         "heartrate": "hr",
         "temperature": "temperature",
@@ -186,22 +219,16 @@ def build_eicu_24h():
     lab = lab[(lab["labresultoffset"] >= 0) & (lab["labresultoffset"] <= WINDOW_MINUTES)].copy()
     lab["labname_lower"] = lab["labname"].astype(str).str.lower()
     lab["labresult"] = pd.to_numeric(lab["labresult"], errors="coerce")
-    lab_map = {
-        "glucose": ["glucose"],
-        "creatinine": ["creatinine"],
-        "wbc": ["wbc", "white blood cell"],
-        "hematocrit": ["hematocrit"],
-        "sodium": ["sodium"],
-        "bun": ["bun", "blood urea nitrogen"],
-    }
-    for feature, keywords in lab_map.items():
-        mask = lab["labname_lower"].apply(lambda x: any(k in x for k in keywords))
+    for feature, names in LAB_NAMES_EICU.items():
+        mask = lab["labname_lower"].isin(names)
         base = base.merge(aggregate_measurements(lab.loc[mask], "patientunitstayid", "labresult", feature), on="patientunitstayid", how="left")
 
     base["source_dataset"] = "eICU"
     base["environment_type"] = "multicenter_icu"
     base["case_id"] = base["patientunitstayid"]
-    return base[["source_dataset", "environment_type", "case_id", "age", "gender", *[c for c in FEATURES if c not in ["age", "gender"]], "target_mortality"]]
+    base["patient_group_id"] = "eICU_" + base["uniquepid"].astype(str)
+    base["admission_group_id"] = "eICU_" + base["patienthealthsystemstayid"].astype(str)
+    return base[["source_dataset", "environment_type", "case_id", "patient_group_id", "admission_group_id", "age", "gender", *[c for c in FEATURES if c not in ["age", "gender"]], "target_mortality"]]
 
 
 def build_pipeline(model, numeric_features, categorical_features):
@@ -215,8 +242,8 @@ def build_pipeline(model, numeric_features, categorical_features):
 
 
 def evaluate(model, x, y, scenario, model_name):
-    pred = model.predict(x)
     score = model.predict_proba(x)[:, 1]
+    pred = (score >= 0.5).astype(int)
     tn, fp, fn, tp = confusion_matrix(y, pred, labels=[0, 1]).ravel()
     return {
         "scenario": scenario,
@@ -240,7 +267,8 @@ df = pd.concat([mimic, eicu], ignore_index=True, sort=False)
 df = df.dropna(subset=["target_mortality"]).copy()
 df["target_mortality"] = df["target_mortality"].astype(int)
 
-feature_cols = [c for c in df.columns if c not in ["case_id", "source_dataset", "environment_type", "target_mortality"]]
+ID_COLUMNS = ["case_id", "patient_group_id", "admission_group_id", "source_dataset", "environment_type"]
+feature_cols = [c for c in df.columns if c not in ID_COLUMNS + ["target_mortality"]]
 x = df[feature_cols]
 y = df["target_mortality"]
 cat = [c for c in feature_cols if df[c].dtype == "object"]

@@ -11,6 +11,8 @@ For this reason, this public reproducibility package does not redistribute raw o
 
 Authorized users should place the required source data in a local directory and update the path constants at the top of the scripts.
 
+The primary regenerated analysis expects the following source tables locally: MIMIC `PATIENTS.csv`, `ADMISSIONS.csv`, `ICUSTAYS.csv`, `LABEVENTS.csv`, `CHARTEVENTS.csv`, `D_LABITEMS.csv`, and `D_ITEMS.csv`; eICU `patient.csv.gz`, `apachePatientResult.csv.gz`, `vitalPeriodic.csv.gz`, `vitalAperiodic.csv.gz`, and `lab.csv.gz`. The public package intentionally includes only aggregate outputs and schema-only examples.
+
 Primary source citations:
 
 - Johnson AEW et al. MIMIC-III, a freely accessible critical care database. Scientific Data. 2016.

@@ -19,13 +19,13 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 
 
-ROOT = Path(r"C:\Users\wilop\Dropbox\graficos-python\salud-digital")
-DATA = Path(r"C:\Users\wilop\Documents\Datos-generales\Clinicos\dataset_clinico_final_mimic_eicu.csv")
 OUT = Path(r"C:\Users\wilop\Documents\Codex\2026-09-06\ha\work")
+DATA = OUT / "dataset_clinico_landmark_24h.csv"
 OUT.mkdir(parents=True, exist_ok=True)
 
 TARGET = "target_mortality"
 SOURCE = "source_dataset"
+ID_COLUMNS = ["case_id", "patient_group_id", "admission_group_id", "source_dataset", "environment_type"]
 SEEDS = [1, 2, 3, 4, 5, 10, 20, 42, 100, 2026]
 
 
@@ -59,10 +59,20 @@ def metrics(y_true, pred, prob):
     }
 
 
-def fit_predict(train, test, model, sample_weight=None):
-    x_train = train.drop(columns=[TARGET, SOURCE, "case_id"], errors="ignore")
+def select_primary_shared_features(df):
+    candidate_features = [c for c in df.columns if c not in ID_COLUMNS + [TARGET]]
+    missing_by_source = df.groupby(SOURCE)[candidate_features].apply(lambda g: g.isna().mean())
+    return [
+        col
+        for col in candidate_features
+        if all(missing_by_source.loc[source, col] <= 0.60 for source in missing_by_source.index)
+    ]
+
+
+def fit_predict(train, test, features, model, sample_weight=None):
+    x_train = train[features]
     y_train = train[TARGET].astype(int)
-    x_test = test.drop(columns=[TARGET, SOURCE, "case_id"], errors="ignore")
+    x_test = test[features]
     y_test = test[TARGET].astype(int)
     pipe = Pipeline([("preprocess", make_preprocessor(x_train)), ("model", model)])
     if sample_weight is None:
@@ -82,7 +92,9 @@ def inverse_frequency_weights(y):
 
 
 def main():
-    df = pd.read_csv(DATA)
+    df = pd.read_csv(DATA).dropna(subset=[TARGET]).copy()
+    df[TARGET] = df[TARGET].astype(int)
+    features = select_primary_shared_features(df)
     mimic = df[df[SOURCE].str.lower().eq("mimic")].copy()
     eicu = df[df[SOURCE].str.lower().eq("eicu")].copy()
 
@@ -100,11 +112,11 @@ def main():
             }
             for model_name, model in models.items():
                 row = {"scenario": scenario, "model": model_name, "seed": seed}
-                row.update(fit_predict(train, test, model))
+                row.update(fit_predict(train, test, features, model))
                 seed_rows.append(row)
 
     seed_df = pd.DataFrame(seed_rows)
-    seed_df.to_csv(OUT / "random_seed_sensitivity.csv", index=False)
+    seed_df.to_csv(OUT / "primary_24h_random_seed_sensitivity.csv", index=False)
 
     summary_metrics = ["accuracy", "precision", "recall", "specificity", "f1", "auc", "tp", "fp", "fn", "tn"]
     seed_summary = (
@@ -113,7 +125,7 @@ def main():
         .reset_index()
     )
     seed_summary.columns = ["_".join([str(x) for x in c if x]) for c in seed_summary.columns]
-    seed_summary.to_csv(OUT / "random_seed_sensitivity_summary.csv", index=False)
+    seed_summary.to_csv(OUT / "primary_24h_random_seed_sensitivity_summary.csv", index=False)
 
     weight_rows = []
     for scenario, (train, test) in scenarios.items():
@@ -129,19 +141,23 @@ def main():
         }
         for variant, (model, sample_weight) in variants.items():
             row = {"scenario": scenario, "variant": variant}
-            row.update(fit_predict(train, test, model, sample_weight=sample_weight))
+            row.update(fit_predict(train, test, features, model, sample_weight=sample_weight))
             weight_rows.append(row)
 
     weight_df = pd.DataFrame(weight_rows)
-    weight_df.to_csv(OUT / "class_weight_sensitivity.csv", index=False)
+    weight_df.to_csv(OUT / "primary_24h_class_weight_sensitivity.csv", index=False)
 
     metadata = {
         "data": str(DATA),
+        "analysis": "primary_24h_landmark_shared_feature_sensitivity",
+        "shared_feature_rule": "retained only if missingness <= 60% in every source dataset",
+        "n_features": len(features),
+        "features": features,
         "seeds": SEEDS,
         "threshold": 0.5,
-        "notes": "Transfer-only sensitivity using the same common feature table and preprocessing used in the submitted manuscript.",
+        "notes": "Transfer-only sensitivity using the primary 24-hour landmark cohort, strict shared-feature selection, and a fixed probability threshold of 0.5.",
     }
-    (OUT / "seed_and_class_weight_sensitivity_metadata.json").write_text(json.dumps(metadata, indent=2), encoding="utf-8")
+    (OUT / "primary_24h_seed_and_class_weight_sensitivity_metadata.json").write_text(json.dumps(metadata, indent=2), encoding="utf-8")
 
 
 if __name__ == "__main__":

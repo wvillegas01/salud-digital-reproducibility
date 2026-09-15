@@ -15,7 +15,7 @@ OUT = Path(r"C:\Users\wilop\Documents\Codex\2026-09-06\ha\work")
 DATA_PATH = OUT / "dataset_clinico_landmark_24h.csv"
 FIG_PATH = Path(r"C:\Users\wilop\Dropbox\MPDI\2026\Salud-digital\Frontiers_LaTeX_Templates\Fig4.jpg")
 TARGET = "target_mortality"
-ID_COLUMNS = ["case_id", "source_dataset", "environment_type"]
+ID_COLUMNS = ["case_id", "patient_group_id", "admission_group_id", "source_dataset", "environment_type"]
 
 
 def build_pipeline(model, numeric_features, categorical_features):
@@ -48,7 +48,7 @@ def main():
     shared_features = [
         col
         for col in candidate_features
-        if all(missing_by_source.loc[source, col] < 1.0 for source in missing_by_source.index)
+        if all(missing_by_source.loc[source, col] <= 0.60 for source in missing_by_source.index)
     ]
     x = df[shared_features]
     categorical_features = [col for col in x.columns if x[col].dtype == "object"]

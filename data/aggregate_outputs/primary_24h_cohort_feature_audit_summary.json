@@ -1,0 +1,61 @@
+{
+  "analysis": "primary_24h_landmark_cohort_feature_audit",
+  "landmark_hours": 24,
+  "source_dataset_rows": {
+    "MIMIC": 110,
+    "eICU": 1324
+  },
+  "events": {
+    "MIMIC": 33,
+    "eICU": 117
+  },
+  "eicu_outcome_source": "apachePatientResult.actualhospitalmortality; APACHE IVa preferred over IV when duplicated",
+  "mimic_outcome_source": "ADMISSIONS.hospital_expire_flag",
+  "mimic_lab_window_audit": {
+    "selected_mimic_lab_rows_before_window_filter": 10853,
+    "selected_mimic_lab_rows_outside_own_icu_window_before_filter": 9478,
+    "selected_mimic_lab_rows_after_own_icu_window_filter": 1375,
+    "selected_mimic_lab_rows_outside_own_icu_window_after_filter": 0,
+    "eligible_mimic_admissions_with_multiple_icu_stays": 4
+  },
+  "primary_shared_feature_rule": "feature retained only when missingness is <= 60% in every source dataset",
+  "primary_shared_feature_count": 35,
+  "primary_shared_features": [
+    "age",
+    "gender",
+    "hr_mean",
+    "hr_min",
+    "hr_max",
+    "respiration_mean",
+    "respiration_min",
+    "respiration_max",
+    "bp_sys_mean",
+    "bp_sys_min",
+    "bp_sys_max",
+    "bp_dia_mean",
+    "bp_dia_min",
+    "bp_dia_max",
+    "bp_mean_mean",
+    "bp_mean_min",
+    "bp_mean_max",
+    "glucose_mean",
+    "glucose_min",
+    "glucose_max",
+    "creatinine_mean",
+    "creatinine_min",
+    "creatinine_max",
+    "wbc_mean",
+    "wbc_min",
+    "wbc_max",
+    "hematocrit_mean",
+    "hematocrit_min",
+    "hematocrit_max",
+    "sodium_mean",
+    "sodium_min",
+    "sodium_max",
+    "bun_mean",
+    "bun_min",
+    "bun_max"
+  ],
+  "temperature_retained": false
+}

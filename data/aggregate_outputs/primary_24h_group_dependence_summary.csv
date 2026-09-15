@@ -1,0 +1,3 @@
+source_dataset,episodes,events,event_prevalence,unique_patients,unique_admissions,patients_with_multiple_episodes,admissions_with_multiple_episodes
+MIMIC,110,33,0.3,79,105,16,4
+eICU,1324,117,0.08836858006042296,1124,1277,139,44
