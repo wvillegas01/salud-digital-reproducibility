@@ -26,7 +26,7 @@ The revised manuscript distinguishes four related analyses:
 3. Secondary strict shared-feature transfer analysis.
 4. Calibration, threshold, bootstrap, exact-binomial interval, seed, and class-weight sensitivity analyses.
 
-The primary analysis and supporting sensitivity analyses were added to address reviewer concerns about temporal leakage, fixed thresholds, calibration, uncertainty, class imbalance, random seeds, and imperfect feature equivalence.
+The primary analysis and supporting sensitivity analyses address methodological concerns about temporal leakage, fixed thresholds, calibration, uncertainty, class imbalance, random seeds, and imperfect feature equivalence.
 
 The v0.1.1 manuscript-alignment update adds a full primary 24-hour audit. The MIMIC extraction now aggregates laboratory measurements by ICU stay rather than hospital admission, uses explicit MIMIC item identifiers and eICU lab-name mappings, applies death or discharge landmark eligibility consistently, obtains the eICU outcome from `apachePatientResult.actualhospitalmortality`, excludes high-missingness temperature descriptors from the primary shared-feature set, and adds patient-grouped internal validation.
 
