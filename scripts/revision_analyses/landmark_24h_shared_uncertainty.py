@@ -116,6 +116,56 @@ def bootstrap_metrics(y_true, y_pred, y_score):
     return intervals
 
 
+def cluster_bootstrap_metrics(y_true, y_pred, y_score, patient_groups):
+    rng = np.random.default_rng(SEED)
+    frame = pd.DataFrame(
+        {
+            "y_true": np.asarray(y_true),
+            "y_pred": np.asarray(y_pred),
+            "y_score": np.asarray(y_score),
+            "patient_group": np.asarray(patient_groups).astype(str),
+        }
+    )
+    grouped_indices = {group: group_df.index.to_numpy() for group, group_df in frame.groupby("patient_group")}
+    groups = np.asarray(list(grouped_indices.keys()))
+    values = {
+        "accuracy": [],
+        "recall": [],
+        "specificity": [],
+        "f1": [],
+        "auc_roc": [],
+        "brier": [],
+    }
+    discarded = 0
+    for _ in range(N_BOOT):
+        sampled_groups = rng.choice(groups, size=len(groups), replace=True)
+        idx = np.concatenate([grouped_indices[group] for group in sampled_groups])
+        yt = frame.loc[idx, "y_true"].to_numpy()
+        yp = frame.loc[idx, "y_pred"].to_numpy()
+        ys = frame.loc[idx, "y_score"].to_numpy()
+        if len(np.unique(yt)) < 2:
+            discarded += 1
+            continue
+        tn, fp, fn, tp = confusion_matrix(yt, yp, labels=[0, 1]).ravel()
+        values["accuracy"].append(accuracy_score(yt, yp))
+        values["recall"].append(recall_score(yt, yp, zero_division=0))
+        values["specificity"].append(tn / (tn + fp) if (tn + fp) else np.nan)
+        values["f1"].append(f1_score(yt, yp, zero_division=0))
+        values["auc_roc"].append(roc_auc_score(yt, ys))
+        values["brier"].append(brier_score_loss(yt, ys))
+    intervals = {
+        "cluster_bootstrap_unit": "patient_group_id",
+        "cluster_bootstrap_resamples": N_BOOT,
+        "cluster_bootstrap_discarded_single_class": discarded,
+        "cluster_count": int(len(groups)),
+    }
+    for metric, vals in values.items():
+        vals = np.asarray(vals, dtype=float)
+        intervals[f"{metric}_cluster_ci_low"] = np.nanpercentile(vals, 2.5)
+        intervals[f"{metric}_cluster_ci_high"] = np.nanpercentile(vals, 97.5)
+    return intervals
+
+
 def main():
     df = pd.read_csv(DATA_PATH).dropna(subset=[TARGET]).copy()
     df[TARGET] = df[TARGET].astype(int)
@@ -151,6 +201,7 @@ def main():
             row = {"scenario": scenario, "model": model_name}
             row.update(point_metrics(y_true, y_pred, y_score))
             row.update(bootstrap_metrics(y_true, y_pred, y_score))
+            row.update(cluster_bootstrap_metrics(y_true, y_pred, y_score, test_df["patient_group_id"]))
             rows.append(row)
     pd.DataFrame(rows).to_csv(OUT / "landmark_24h_shared_transfer_uncertainty.csv", index=False)
 

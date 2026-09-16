@@ -11,6 +11,7 @@ This package contains the code, aggregate outputs, variable documentation, and m
 - Aggregate, non-patient-level result files in `data/aggregate_outputs/`.
 - Schema-only examples in `data/schema_examples/`.
 - Variable and data-access documentation in `docs/`.
+- A results manifest mapping manuscript tables and figures to scripts and aggregate outputs in `docs/RESULTS_MANIFEST.md`.
 - Revised LaTeX manuscript files, compiled redline PDF, and revised manuscript figures in `manuscript/`.
 
 ## What is not included
@@ -24,11 +25,11 @@ The revised manuscript distinguishes four related analyses:
 1. Primary twenty-four-hour shared-feature analysis.
 2. Full-episode/full-feature retrospective analysis.
 3. Secondary strict shared-feature transfer analysis.
-4. Calibration, threshold, bootstrap, exact-binomial interval, seed, and class-weight sensitivity analyses.
+4. Calibration, threshold, patient-cluster bootstrap, seed, and class-weight sensitivity analyses.
 
-The primary analysis and supporting sensitivity analyses address methodological concerns about temporal leakage, fixed thresholds, calibration, uncertainty, class imbalance, random seeds, and imperfect feature equivalence.
+The primary analysis and supporting sensitivity analyses address methodological concerns about temporal leakage, fixed thresholds, calibration, uncertainty, repeated ICU stays within patients, class imbalance, random seeds, and imperfect feature equivalence.
 
-The v0.1.1 manuscript-alignment update adds a full primary 24-hour audit. The MIMIC extraction now aggregates laboratory measurements by ICU stay rather than hospital admission, uses explicit MIMIC item identifiers and eICU lab-name mappings, applies death or discharge landmark eligibility consistently, obtains the eICU outcome from `apachePatientResult.actualhospitalmortality`, excludes high-missingness temperature descriptors from the primary shared-feature set, and adds patient-grouped internal validation.
+The v0.1.1 manuscript-alignment update adds a full primary 24-hour audit. The MIMIC extraction now aggregates laboratory measurements by ICU stay rather than hospital admission, uses explicit MIMIC item identifiers and eICU lab-name mappings, applies death or discharge landmark eligibility consistently, obtains the eICU outcome from `apachePatientResult.actualhospitalmortality`, excludes high-missingness temperature descriptors from the primary shared-feature set, adds patient-grouped internal validation, and reports patient-cluster bootstrap intervals for cross-domain transfer uncertainty.
 
 ## Software environment
 
