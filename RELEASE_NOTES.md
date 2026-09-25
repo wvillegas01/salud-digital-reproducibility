@@ -1,6 +1,6 @@
-# v0.2.0
+# v0.2.1
 
-Technical audit update for the primary 24-hour landmark reproducibility workflow.
+Final consistency update for the third-round reviewer audit.
 
 This update adds:
 
@@ -18,6 +18,19 @@ This update adds:
 - Added manuscript Ethics Statement and Generative AI Statement for Frontiers front-matter consistency.
 
 Patient-level MIMIC/eICU raw or derived records remain excluded from the public archive. The package contains only scripts, documentation, schema-only examples, manuscript artifacts, and aggregate non-patient-level outputs.
+
+# v0.2.0
+
+Technical audit update for the primary 24-hour landmark reproducibility workflow.
+
+This update adds:
+
+- ICU-stay-level MIMIC laboratory aggregation for the primary 24-hour landmark extraction.
+- Explicit MIMIC item-id and eICU lab-name feature mappings.
+- eICU mortality labeling from `apachePatientResult.actualhospitalmortality`.
+- Landmark eligibility excluding episodes with death, ICU discharge, or hospital discharge before completion of the 24-hour observation window.
+- Primary missingness-rule audit showing exclusion of temperature descriptors from the shared-feature matrix because of high eICU missingness.
+- Updated primary cohort counts, transfer metrics, calibration diagnostics, random-seed sensitivity, class-weight sensitivity, and patient-grouped internal validation.
 
 # v0.1.1
 
