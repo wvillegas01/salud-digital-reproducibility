@@ -1,6 +1,6 @@
 # Salud Digital ICU Mortality Transfer Reproducibility Package
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22802875.svg)](https://doi.org/10.5281/zenodo.22802875)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22962150.svg)](https://doi.org/10.5281/zenodo.22962150)
 
 This package contains the code, aggregate outputs, variable documentation, and manuscript files needed to reproduce the revised analyses for the manuscript on cross-domain ICU mortality prediction across MIMIC and eICU.
 
@@ -37,5 +37,5 @@ The regenerated revised outputs were run with Python 3.8.10, scikit-learn 1.3.2,
 
 ## Citation
 
-Please cite this archived reproducibility package using DOI: https://doi.org/10.5281/zenodo.22802875.
+Please cite this archived reproducibility package using DOI: https://doi.org/10.5281/zenodo.22962150.
 
