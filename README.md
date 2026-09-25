@@ -29,11 +29,11 @@ The revised manuscript distinguishes four related analyses:
 
 The primary analysis and supporting sensitivity analyses address methodological concerns about temporal leakage, fixed thresholds, calibration, uncertainty, repeated ICU stays within patients, class imbalance, random seeds, and imperfect feature equivalence.
 
-The v0.1.1 manuscript-alignment update adds a full primary 24-hour audit. The MIMIC extraction now aggregates laboratory measurements by ICU stay rather than hospital admission, uses explicit MIMIC item identifiers and eICU lab-name mappings, applies death or discharge landmark eligibility consistently, obtains the eICU outcome from `apachePatientResult.actualhospitalmortality`, excludes high-missingness temperature descriptors from the primary shared-feature set, adds patient-grouped internal validation, and reports patient-cluster bootstrap intervals for cross-domain transfer uncertainty.
+The v0.2.0 technical-audit update adds a full primary 24-hour audit. The MIMIC extraction now aggregates laboratory measurements by ICU stay rather than hospital admission, uses explicit MIMIC item identifiers and eICU lab-name mappings, applies death or discharge landmark eligibility consistently, obtains the eICU outcome from `apachePatientResult.actualhospitalmortality`, excludes high-missingness temperature descriptors from the primary shared-feature set, adds patient-grouped internal validation, and reports patient-cluster bootstrap intervals for cross-domain transfer uncertainty. It also regenerates Table 7 and Figure 5 from the same restricted canonical prediction file so the calibration bins, ECE values, confusion-matrix counts, and threshold-dependent diagnostics are internally consistent. The eICU sequential-flow audit now includes `primary_24h_eicu_input_manifest.json`, which identifies the controlled-access local eICU input files by source-table name, byte size, and SHA-256 checksum without redistributing patient-level records.
 
 ## Software environment
 
-The final regenerated primary outputs were run with Python 3.12, scikit-learn 1.8.0, pandas 2.2.2, and NumPy 2.0.2. Earlier secondary outputs were generated under Python 3.8.10, scikit-learn 1.3.2, pandas 2.0.3, and NumPy 1.24.3.
+The regenerated revised outputs were run with Python 3.8.10, scikit-learn 1.3.2, pandas 2.0.3, and NumPy 1.24.3, matching `environment.yml` and `requirements.txt`.
 
 ## Citation
 

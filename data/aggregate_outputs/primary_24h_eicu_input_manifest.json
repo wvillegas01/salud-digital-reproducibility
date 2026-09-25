@@ -1,0 +1,32 @@
+{
+  "source_database": "eICU Collaborative Research Database, local authorized subset",
+  "subset_note": "No additional hospital-level or date-range selection rule was applied by the revision scripts. The analysis uses the eICU tables available in the authorized local eICU directory; because this is a partial local extract, hospital-level representativeness is not inferred.",
+  "landmark_minutes": 1440,
+  "input_files": [
+    {
+      "file": "patient.csv.gz",
+      "bytes": 136791,
+      "sha256": "15e1eb52169828e3cfff3b67132a087298de4d0365bbb31bb294f6043bffd474"
+    },
+    {
+      "file": "apachePatientResult.csv.gz",
+      "bytes": 214122,
+      "sha256": "ce799692737f7a712c59aa8fbb9a302cee7c719887f0638caed3ae144b166821"
+    },
+    {
+      "file": "vitalPeriodic.csv.gz",
+      "bytes": 19391070,
+      "sha256": "04dc093a2e77cd4c52ac7f2a47a8356fbb7456c7f15deb20d5abb1ca4303231d"
+    },
+    {
+      "file": "vitalAperiodic.csv.gz",
+      "bytes": 2619980,
+      "sha256": "c294f46647990cb648b3ebfa589e83f330bdc0c2c922b5e8f23aa0ef99954635"
+    },
+    {
+      "file": "lab.csv.gz",
+      "bytes": 5729763,
+      "sha256": "e06852850abeb65211bc22ac43f17121ba41b14656fac862396449af84d8273a"
+    }
+  ]
+}

@@ -245,13 +245,14 @@ def evaluate(model, x, y, scenario, model_name):
     score = model.predict_proba(x)[:, 1]
     pred = (score >= 0.5).astype(int)
     tn, fp, fn, tp = confusion_matrix(y, pred, labels=[0, 1]).ravel()
+    precision = np.nan if (tp + fp) == 0 else precision_score(y, pred)
     return {
         "scenario": scenario,
         "model": model_name,
         "n_test": len(y),
         "events": int(np.sum(y == 1)),
         "accuracy": accuracy_score(y, pred),
-        "precision": precision_score(y, pred, zero_division=0),
+        "precision": precision,
         "recall": recall_score(y, pred, zero_division=0),
         "f1": f1_score(y, pred, zero_division=0),
         "auc_roc": roc_auc_score(y, score) if len(np.unique(y)) > 1 else np.nan,

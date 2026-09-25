@@ -1,0 +1,7 @@
+stage,rows,unique_icu_stays,resolved_outcomes,deaths,rows_removed_from_previous_stage,unique_icu_stays_removed_from_previous_stage,deaths_removed_from_previous_stage
+Local eICU patient table input,2520,2520,,,,,
+Raw APACHE result rows before selection,3676,1838,3676,310,-1156.0,682.0,
+After selecting one APACHE result per ICU stay,1838,1838,1838,155,1838.0,0.0,155
+After joining selected APACHE result to patient table,2520,2520,1838,155,-682.0,-682.0,0
+After requiring resolvable hospital mortality outcome,1838,1838,1838,155,682.0,682.0,0
+After 24-hour ICU/hospital landmark eligibility,1324,1324,1324,117,514.0,514.0,38
